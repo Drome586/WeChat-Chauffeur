@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hxds.dr.db.dao.DriverSettingsDao">
+    <insert id="insertDriverSettings" parameterType="com.example.hxds.dr.db.pojo.DriverSettingsEntity">
+        INSERT INTO tb_driver_settings
+        SET driver_id = #{driverId},
+            settings = #{settings}
+    </insert>
+    <select id="searchDriverSettings" resultType="java.lang.String">
+        SELECT settings
+        FROM tb_driver_settings
+        WHERE driver_id = #{driverId}
+    </select>
+</mapper>

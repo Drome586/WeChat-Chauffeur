@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hxds.dr.db.dao.DriverDao">
+    <update id="updateDriverAuth" parameterType="Map">
+        UPDATE tb_driver
+        SET `name`            = #{name},
+            sex               = #{sex},
+            pid               = #{pid},
+            birthday          = #{birthday},
+            tel               = #{tel},
+            mail_address      = #{mailAddress},
+            contact_name      = #{contactName},
+            contact_tel       = #{contactTel},
+            email             = #{email},
+            real_auth         = 3,
+            idcard_address    = #{idcardAddress},
+            idcard_expiration = #{idcardExpiration},
+            idcard_front      = #{idcardFront},
+            idcard_back       = #{idcardBack},
+            idcard_holding    = #{idcardHolding},
+            drcard_type       = #{drcardType},
+            drcard_expiration = #{drcardExpiration},
+            drcard_issue_date = #{drcardIssueDate},
+            drcard_front      = #{drcardFront},
+            drcard_back       = #{drcardBack},
+            drcard_holding    = #{drcardHolding}
+        WHERE id = #{driverId}
+    </update>
+    <update id="updateDriverArchive">
+        UPDATE tb_driver
+        SET archive=1
+        WHERE id = #{driverId}
+    </update>
+    <update id="updateDriverRealAuth">
+        UPDATE tb_driver
+        SET real_auth = #{realAuth}
+        WHERE id = #{driverId}
+    </update>
+    <select id="hasDriver" parameterType="Map" resultType="long">
+        SELECT COUNT(id) AS ct
+        FROM tb_driver
+        WHERE 1=1
+        <if test="openId!=null">
+            AND open_id = #{openId}
+        </if>
+        <if test="driverId!=null">
+            AND id = #{driverId}
+        </if>
+    </select>
+
+    <insert id="registerNewDriver" parameterType="Map">
+        INSERT INTO tb_driver
+        SET open_id = #{openId},
+            nickname = #{nickname},
+            photo = #{photo},
+            real_auth = 1,
+            summary = '{"level":0,"totalOrder":0,"weekOrder":0,"weekComment":0,"appeal":0}',
+            archive = false,
+            `status` = 1
+    </insert>
+
+    <select id="searchDriverId" parameterType="String" resultType="String">
+        SELECT CAST(id AS CHAR) AS id
+        FROM tb_driver
+        WHERE open_id = #{openId}
+    </select>
+    <select id="searchDriverNameAndSex" resultType="java.util.HashMap">
+        SELECT name,
+               sex
+        FROM tb_driver
+        WHERE id = #{driverId}
+    </select>
+    <select id="login" resultType="java.util.HashMap">
+        SELECT CAST(id AS CHAR) AS id,
+               real_auth        AS realAuth,
+               archive
+        FROM tb_driver
+        WHERE `status` != 2 AND open_id = #{openId}
+    </select>
+    <select id="searchDriverBaseInfo" resultType="java.util.HashMap">
+        SELECT d.open_id               AS openId,
+               d.`name`,
+               d.nickname,
+               d.sex,
+               d.photo,
+               d.tel,
+               d.email,
+               d.pid,
+               d.real_auth             AS realAuth,
+               d.summary,
+               d.`status`,
+               CAST(w.balance AS CHAR) AS balance,
+               d.create_time           AS createTime
+        FROM tb_driver d
+        JOIN tb_wallet w ON d.id = w.driver_id
+        WHERE d.id = #{driverId};
+    </select>
+    <select id="searchDriverByPage" resultType="java.util.HashMap">
+        SELECT CAST(id AS CHAR) AS id,
+            IFNULL(`name`,"") AS `name`,
+            IFNULL(sex,"") AS sex,
+            IFNULL(pid,"") AS pid,
+            IFNULL(tel,"") AS tel,
+            IFNULL(contact_name,"") AS contactName,
+            IFNULL(contact_tel,"") AS contactTel,
+            IFNULL(real_auth,"") AS realAuth,
+            `status`,
+            DATE_FORMAT(create_time, '%Y-%m-%d') AS createTime
+        FROM tb_driver
+        WHERE 1=1
+        <if test="name!=null">
+            AND `name` = #{name}
+        </if>
+        <if test="tel!=null">
+            AND tel = #{tel}
+        </if>
+        <if test="pid!=null">
+            AND pid = #{pid}
+        </if>
+        <if test="sex!=null">
+            AND sex = #{sex}
+        </if>
+        <if test="realAuth!=null">
+            AND `real_auth` = #{realAuth}
+        </if>
+        <if test="status!=null">
+            AND `status` = #{status}
+        </if>
+        LIMIT #{start}, #{length}
+    </select>
+    <select id="searchDriverCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM tb_driver
+        WHERE 1=1
+        <if test="name!=null">
+            AND `name` = #{name}
+        </if>
+        <if test="tel!=null">
+            AND tel = #{tel}
+        </if>
+        <if test="pid!=null">
+            AND pid = #{pid}
+        </if>
+        <if test="sex!=null">
+            AND sex = #{sex}
+        </if>
+        <if test="realAuth!=null">
+            AND `real_auth` = #{realAuth}
+        </if>
+        <if test="status!=null">
+            AND `status` = #{status}
+        </if>
+    </select>
+    <select id="searchDriverAuth" resultType="java.util.HashMap">
+        SELECT IFNULL(`name`, '')            AS `name`,
+               IFNULL(sex, '')               AS sex,
+               IFNULL(pid, '')               AS pid,
+               IFNULL(birthday, '')          AS birthday,
+               IFNULL(tel, '')               AS tel,
+               IFNULL(mail_address, '')      AS mailAddress,
+               IFNULL(contact_name, '')      AS contactName,
+               IFNULL(contact_tel, '')       AS contactTel,
+               IFNULL(email, '')             AS email,
+               IFNULL(real_auth, '')         AS realAuth,
+               IFNULL(idcard_address, '')    AS idcardAddress,
+               IFNULL(idcard_expiration, '') AS idcardExpiration,
+               IFNULL(idcard_front, '')      AS idcardFront,
+               IFNULL(idcard_back, '')       AS idcardBack,
+               IFNULL(idcard_holding, '')    AS idcardHolding,
+               IFNULL(drcard_type, '')       AS drcardType,
+               IFNULL(drcard_expiration, '') AS drcardExpiration,
+               IFNULL(drcard_issue_date, '') AS drcardIssueDate,
+               IFNULL(drcard_front, '')      AS drcardFront,
+               IFNULL(drcard_back, '')       AS drcardBack,
+               IFNULL(drcard_holding, '')    AS drcardHolding
+        FROM tb_driver
+        WHERE id = #{driverId}
+    </select>
+    <select id="searchDriverRealSummary" resultType="java.util.HashMap">
+        SELECT timestampdiff(YEAR,drcard_issue_date, NOW()) AS `year`,
+               birthday,
+               email,
+               mail_address                                 AS mailAddress,
+               idcard_address                               AS idcardAddress,
+               idcard_front                                 AS idcardFront,
+               idcard_back                                  AS idcardBack,
+               idcard_holding                               AS idcardHolding,
+               drcard_front                                 AS drcardFront,
+               drcard_back                                  AS drcardBack,
+               drcard_holding                               AS drcardHolding
+        FROM tb_driver
+        WHERE id = #{driverId}
+    </select>
+</mapper>
