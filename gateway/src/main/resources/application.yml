@@ -77,6 +77,12 @@ spring:
             - Path=/hxds-mis-api/**
           filters:
             - StripPrefix=1
+        - id: bff-customer
+          uri: lb://bff-customer
+          predicates:
+            - Path=/hxds-customer/**
+          filters:
+            - StripPrefix=1
   servlet:
     multipart:
       enabled: true
