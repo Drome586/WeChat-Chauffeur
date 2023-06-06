@@ -4,12 +4,15 @@ import cn.hutool.core.map.MapUtil;
 import com.codingapi.txlcn.tc.annotation.LcnTransaction;
 import com.example.hxds.common.exception.HxdsException;
 import com.example.hxds.common.util.MicroAppUtil;
+import com.example.hxds.cst.db.dao.CustomerCarDao;
 import com.example.hxds.cst.db.dao.CustomerDao;
+import com.example.hxds.cst.db.pojo.CustomerCarEntity;
 import com.example.hxds.cst.service.CustomerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +24,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Resource
     private MicroAppUtil microAppUtil;
+
+    @Resource
+    private CustomerCarDao customerCarDao;
 
     @Override
     @Transactional
@@ -50,4 +56,6 @@ public class CustomerServiceImpl implements CustomerService {
         customerId = (customerId != null?customerId:"");
         return customerId;
     }
+
+
 }
