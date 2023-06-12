@@ -19,8 +19,8 @@ tencent:
 wx:
   app-id: wx75771b5d0fb899ad
   app-secret: d707ddebb36bcf62f9239d2d25bc57e6
-  mch-id: 1643743474
-  key: lixiaojunjijunli1505327790519921
+  mch-id: 1526972031
+  key: 5879a218f67f46a5aad75753a132ff3d
   cert-path: F:\apiclient_cert.p12
 
 minio:

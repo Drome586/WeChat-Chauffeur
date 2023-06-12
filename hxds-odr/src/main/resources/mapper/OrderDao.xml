@@ -3,6 +3,22 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.hxds.odr.db.dao.OrderDao">
+    <insert id="insert">
+        INSERT INTO tb_order
+        SET uuid = #{uuid},
+            customer_id = #{customerId},
+            start_place = #{startPlace},
+            start_place_location = #{startPlaceLocation},
+            end_place = #{endPlace},
+            end_place_location = #{endPlaceLocation},
+            expects_mileage = #{expectsMileage},
+            expects_fee = #{expectsFee},
+            favour_fee = #{favourFee},
+            charge_rule_id=#{chargeRuleId},
+            car_plate=#{carPlate},
+            car_type=#{carType},
+            date = #{date}
+    </insert>
 
     <select id="searchDriverTodayBusinessData" resultType="java.util.HashMap">
         SELECT IFNULL(SUM(TIMESTAMPDIFF(HOUR,end_time, start_time)),0) AS duration,
@@ -12,5 +28,10 @@
         WHERE driver_id = #{driverId}
           AND `status` IN (5, 6, 7, 8)
           AND date = CURRENT_DATE
+    </select>
+    <select id="searchOrderIdByUUID" resultType="java.lang.String">
+        SELECT CAST(id AS CHAR) AS id
+        FROM tb_order
+        WHERE uuid = #{uuid}
     </select>
 </mapper>
