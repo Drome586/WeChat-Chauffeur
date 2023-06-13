@@ -10,3 +10,4 @@ public interface RuleServiceApi {
     @PostMapping("/charge/estimateOrderCharge")
     public R estimateOrderCharge(EstimateOrderChargeForm form);
 }
+

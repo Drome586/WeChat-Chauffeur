@@ -2,11 +2,14 @@ package com.example.hxds.bff.customer.service.impl;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.IdUtil;
 import com.codingapi.txlcn.tc.annotation.LcnTransaction;
 import com.example.hxds.bff.customer.controller.form.CreateNewOrderForm;
 import com.example.hxds.bff.customer.controller.form.EstimateOrderChargeForm;
 import com.example.hxds.bff.customer.controller.form.EstimateOrderMileageAndMinuteForm;
+import com.example.hxds.bff.customer.controller.form.InsertOrderForm;
 import com.example.hxds.bff.customer.feign.MpsServiceApi;
+import com.example.hxds.bff.customer.feign.OdrServiceApi;
 import com.example.hxds.bff.customer.feign.RuleServiceApi;
 import com.example.hxds.bff.customer.service.OrderService;
 import com.example.hxds.common.util.R;
@@ -25,6 +28,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Resource
     private RuleServiceApi ruleServiceApi;
+
+    @Resource
+    private OdrServiceApi odrServiceApi;
 
     @Override
     @LcnTransaction
@@ -71,6 +77,40 @@ public class OrderServiceImpl implements OrderService {
         String exceedMinutePrice = MapUtil.getStr(map, "exceedMinutePrice");
         short baseReturnMileage = MapUtil.getShort(map, "baseReturnMileage");
         String exceedReturnPrice = MapUtil.getStr(map, "exceedReturnPrice");
+        //TODO 搜索适合接单的司机，有的话就创建订单，否则就不创建订单
+
+        /*
+        生成订单记录
+         */
+        InsertOrderForm form_4 = new InsertOrderForm();
+        //uuid微信支付时充当订单号
+        form_4.setUuid(IdUtil.simpleUUID());
+        form_4.setCustomerId(customerId);
+        form_4.setStartPlace(startPlace);
+        form_4.setStartPlaceLatitude(startPlaceLatitude);
+        form_4.setStartPlaceLongitude(startPlaceLongitude);
+        form_4.setEndPlace(endPlace);
+        form_4.setEndPlaceLatitude(endPlaceLatitude);
+        form_4.setEndPlaceLongitude(endPlaceLongitude);
+        form_4.setExpectsMileage(mileage);
+        form_4.setExpectsFee(expectsFee);
+        form_4.setFavourFee(favourFee);
+        form_4.setDate(new DateTime().toDateStr());
+        form_4.setChargeRuleId(Long.parseLong(chargeRuleId));
+        form_4.setCarPlate(form.getCarPlate());
+        form_4.setCarType(form.getCarType());
+        form_4.setBaseMileage(baseMileage);
+        form_4.setBaseMileagePrice(baseMileagePrice);
+        form_4.setExceedMileagePrice(exceedMileagePrice);
+        form_4.setBaseMinute(baseMinute);
+        form_4.setExceedMinutePrice(exceedMinutePrice);
+        form_4.setBaseReturnMileage(baseReturnMileage);
+        form_4.setExceedReturnPrice(exceedReturnPrice);
+
+        r = odrServiceApi.insertOrder(form_4);
+        String orderId = MapUtil.getStr(r, "result");
+
+        //TODO 发送通知符合条件的司机抢单
         return 0;
     }
 }
