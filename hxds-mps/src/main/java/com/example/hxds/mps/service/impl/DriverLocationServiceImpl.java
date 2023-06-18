@@ -48,7 +48,7 @@ public class DriverLocationServiceImpl implements DriverLocationService {
         把司机实时定位信息缓存到redis里面，便于GEO的计算
         GEO是集合形式，如果设置过期时间，所有司机的定位缓存就全都失效了
         正确做法是司机上线后，更新GEO中的缓存定位
-        driverId+"" 是将int型转换为字符串类型，并且留的是司机的定位点的坐标，并不是景点的名字
+        driverId+""  是将int型转换为字符串类型，并且留的是司机的定位点的坐标，并不是景点的名字
          */
         redisTemplate.opsForGeo().add("driver_location",point,driverId+"");
 
@@ -148,9 +148,9 @@ public class DriverLocationServiceImpl implements DriverLocationService {
                     bool_2 = true;
                 }else if(orderDistance == 10 && mileage > 5 && mileage <= 10){
                     bool_2 = true;
-                }else if(orderDistance == 15 && mileage > 15 && mileage <= 15){
+                }else if(orderDistance == 15 && mileage > 10 && mileage <= 15){
                     bool_2 = true;
-                }else if(orderDistance == 30 && mileage > 30 && mileage <=30){
+                }else if(orderDistance == 30 && mileage > 15 && mileage <=30){
                     bool_2 = true;
                 }
                 //判断定向接单是否符合
