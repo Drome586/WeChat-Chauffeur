@@ -61,7 +61,8 @@ public class NewOrderMessageTask {
 
                 //向交换机发送消息，并附带routingKey
                 channel.basicPublish(exchangeName,routingKey,properties,("新订单" + message.getOrderId()).getBytes());
-                log.debug(message.getUserId() + "新订单消息发送成功");
+                //log.debug(message.getUserId() + "新订单消息发送成功");
+                log.info(message.getUserId() + "新订单消息发送成功");
 
             }
 
@@ -126,15 +127,15 @@ public class NewOrderMessageTask {
                     message.setTo(to);
                     message.setExpectsFee(expectsFee);
                     message.setMileage(mileage);
-                    message.setDistance(distance);
                     message.setMinute(minute);
+                    message.setDistance(distance);
                     message.setFavourFee(favourFee);
 
                     list.add(message);
 
                     byte[] body = response.getBody();
                     String msg = new String(body);
-                    log.debug("从RabbitMQ接收的订单消息：" + msg);
+                    //log.debug("从RabbitMQ接收的订单消息：" + msg);
 
                     //确定收到消息，让MQ删除该消息
                     long deliveryTag = response.getEnvelope().getDeliveryTag();

@@ -18,14 +18,15 @@ public class Demo {
     @Test
     public void sendMessageTest(){
         NewOrderMessage message = new NewOrderMessage();
-        message.setUserId("1234");
+        message.setUserId("9527");
         message.setFrom("大连理工大学");
         message.setTo("大连海事大学");
-        message.setExpectsFee("46.0");
         message.setDistance("10");
-        message.setMinute("12");
+        message.setExpectsFee("46.0");
+        message.setMileage("11.6");
+        message.setMinute("12.0");
         message.setFavourFee("0.0");
-        message.setMileage("11");
+
 
         ArrayList list = new ArrayList(){{
             add(message);
@@ -35,7 +36,7 @@ public class Demo {
 
     @Test
     public void receiveMessageTest(){
-        List<NewOrderMessage> list = task.receiveNewOrderMessage(1234);
+        List<NewOrderMessage> list = task.receiveNewOrderMessage(9527);
         list.forEach(one->{
             System.out.println(one.getFrom());
             System.out.println(one.getTo());
