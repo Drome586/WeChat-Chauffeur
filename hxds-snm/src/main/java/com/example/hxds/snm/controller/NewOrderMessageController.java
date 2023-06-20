@@ -1,6 +1,9 @@
 package com.example.hxds.snm.controller;
 
 import com.example.hxds.common.util.R;
+import com.example.hxds.snm.controller.form.ClearNewOrderQueueForm;
+import com.example.hxds.snm.controller.form.DeleteNewOrderQueueForm;
+import com.example.hxds.snm.controller.form.ReceiveNewOrderMessageForm;
 import com.example.hxds.snm.controller.form.SendNewOrderMessageForm;
 import com.example.hxds.snm.entity.NewOrderMessage;
 import com.example.hxds.snm.task.NewOrderMessageTask;
@@ -14,6 +17,7 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/message/order/new")
@@ -72,6 +76,41 @@ public class NewOrderMessageController {
             list.add(message);
         }
         task.sendNewOrderMessageAsync(list);
+        return R.ok();
+    }
+
+    @PostMapping("/receiveNewOrderMessage")
+    @Operation(summary = "同步接收新订单消息")
+    public R receiveNewOrderMessage(@RequestBody @Valid ReceiveNewOrderMessageForm form){
+        List<NewOrderMessage> list = task.receiveNewOrderMessage(form.getUserId());
+        return R.ok().put("result",list);
+    }
+
+    @PostMapping("/deleteNewOrderQueue")
+    @Operation(summary = "同步删除消息队列")
+    public R deleteNewOrderQueue(@RequestBody @Valid DeleteNewOrderQueueForm form){
+        task.deleteNewOrderQueue(form.getUserId());
+        return R.ok();
+    }
+
+    @PostMapping("/deleteNewOrderQueueeAsync")
+    @Operation(summary = "异步删除消息队列")
+    public R deleteNewOrderQueueAsync(@RequestBody @Valid DeleteNewOrderQueueForm form){
+        task.deleteNewOrderQueueAsync(form.getUserId());
+        return R.ok();
+    }
+
+    @PostMapping("/clearNewOrderQueue")
+    @Operation(summary = "同步清空新订单消息队列")
+    public R clearNewOrderQueue(@RequestBody @Valid ClearNewOrderQueueForm form){
+        task.clearNewOrderQueue(form.getUserId());
+        return R.ok();
+    }
+
+    @PostMapping("/clearNewOrderQueueAsync")
+    @Operation(summary = "异步清空新订单消息队列")
+    public R clearNewOrderQueueAsync(@RequestBody @Valid ClearNewOrderQueueForm form){
+        task.clearNewOrderQueueAsync(form.getUserId());
         return R.ok();
     }
 }

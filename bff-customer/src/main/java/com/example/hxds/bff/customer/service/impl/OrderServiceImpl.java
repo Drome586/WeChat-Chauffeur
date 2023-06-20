@@ -8,12 +8,15 @@ import com.example.hxds.bff.customer.controller.form.*;
 import com.example.hxds.bff.customer.feign.MpsServiceApi;
 import com.example.hxds.bff.customer.feign.OdrServiceApi;
 import com.example.hxds.bff.customer.feign.RuleServiceApi;
+import com.example.hxds.bff.customer.feign.SnmServiceApi;
 import com.example.hxds.bff.customer.service.OrderService;
 import com.example.hxds.common.util.R;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -29,6 +32,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Resource
     private OdrServiceApi odrServiceApi;
+
+    @Resource
+    private SnmServiceApi snmServiceApi;
 
     @Override
     @LcnTransaction
@@ -125,6 +131,32 @@ public class OrderServiceImpl implements OrderService {
             String orderId = MapUtil.getStr(r, "result");
 
             //TODO 发送通知符合条件的司机抢单
+
+            SendNewOrderMessageForm form_5 = new SendNewOrderMessageForm();
+            String[] driverContent = new String[list.size()];
+            for(int i = 0;i < list.size();i++){
+                HashMap one = list.get(i);
+                String driverId = MapUtil.getStr(one, "driverId");
+                String distance = MapUtil.getStr(one, "distance");
+
+                //将距离精确到小数点后一位，为什么要返回距离信息呢？因为后面会用到语音播报，例如
+                //”距离您2.3公里处有一个订单“
+                distance = new BigDecimal(distance).setScale(1, RoundingMode.CEILING).toString();
+                driverContent[i] = driverId + "#" + distance;
+            }
+
+            form_5.setDriversContent(driverContent);
+            form_5.setOrderId(Long.parseLong(orderId));
+            form_5.setFrom(startPlace);
+            form_5.setTo(endPlace);
+            form_5.setExpectsFee(expectsFee);
+            //里程转化为小数保留最后一位
+            mileage = new BigDecimal(mileage).setScale(1, RoundingMode.CEILING).toString();
+            form_5.setMileage(mileage);
+            form_5.setMinute(minute);
+            form_5.setFavourFee(favourFee);
+            //异步发送消息
+            snmServiceApi.sendNewOrderMessageAsync(form_5);
 
             //放入订单号即uuid
             result.put("orderId",orderId);

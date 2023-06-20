@@ -27,7 +27,7 @@ public class NewOrderMessageTask {
      */
 
     public void sendNewOrderMessage(ArrayList<NewOrderMessage> list){
-        int ttl = 1 * 60 * 1000;     //新消息订单缓存过期时间为1分钟
+        int ttl = 10 * 60 * 1000;     //新消息订单缓存过期时间为1分钟
         String exchangeName = "new_order_private";  //交换机名字
 
         try(
