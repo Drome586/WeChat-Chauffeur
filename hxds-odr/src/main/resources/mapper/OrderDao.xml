@@ -19,6 +19,13 @@
             car_type=#{carType},
             date = #{date}
     </insert>
+    <update id="acceptNewOrder">
+        UPDATE tb_order
+        SET driver_id = #{driverId},
+            accept_time = NOW(),
+            `status` = 2
+        WHERE id = #{orderId}
+    </update>
 
     <select id="searchDriverTodayBusinessData" resultType="java.util.HashMap">
         SELECT IFNULL(SUM(TIMESTAMPDIFF(HOUR,end_time, start_time)),0) AS duration,
@@ -33,5 +40,20 @@
         SELECT CAST(id AS CHAR) AS id
         FROM tb_order
         WHERE uuid = #{uuid}
+    </select>
+    <select id="searchDriverExecuteOrder" resultType="java.util.HashMap">
+        SELECT CAST(id AS CHAR)                              AS id,
+               customer_id                                   AS customerId,
+               start_place                                   AS startPlace,
+               start_place_location                          AS startPlaceLocation,
+               end_place                                     AS endPlace,
+               end_place_location                            AS endPlaceLocation,
+               CAST(favour_fee AS CHAR)                      AS favourFee,
+               car_plate                                     AS carPlate,
+               car_type                                      AS carType,
+               DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') AS createTime
+        FROM tb_order
+        WHERE id = #{orderId}
+        AND driver_id = #{driverId}
     </select>
 </mapper>
