@@ -12,4 +12,6 @@ public interface CustomerDao {
 
     public String login(String code);
 
+    public HashMap searchCustomerOrderInfoInOrder(long customerId);
+
 }

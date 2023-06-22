@@ -66,7 +66,7 @@ public class OrderServiceImpl implements OrderService {
 
                 //order 后面加 # 号代表新生成未被抢的订单，“none”将来存放司机的主键值，表示哪个司机抢了这个订单。
                 redisTemplate.opsForValue().set("order#"+id,"none");
-                redisTemplate.expire("order#"+id,15, TimeUnit.MINUTES);
+                redisTemplate.expire("order#"+id,16, TimeUnit.MINUTES);
                 return id;
             }else{
                 throw new HxdsException("保存新订单失败");
@@ -114,9 +114,44 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public HashMap searchDriverExecuteOrder(HashMap param) {
+    public HashMap searchDriverExecuteOrder(Map param) {
         HashMap result = orderDao.searchDriverExecuteOrder(param);
         return result;
+    }
+
+    @Override
+    public Integer searchOrderStatus(Map param) {
+        Integer status = orderDao.searchOrderStatus(param);
+        if(status == null){
+            throw new HxdsException("没有查询到数据，请核对查询条件");
+        }
+        return status;
+    }
+
+    @Override
+    @Transactional
+    @LcnTransaction
+    public String deleteUnAcceptOrder(Map param) {
+        //先拿到orderId删除redis中的缓存信息
+        long orderId = MapUtil.getLong(param, "orderId");
+        if(!redisTemplate.hasKey("order#"+orderId)){
+            return "订单取消失败";
+        }
+        redisTemplate.execute(new SessionCallback() {
+            @Override
+            public Object execute(RedisOperations operations) throws DataAccessException {
+                operations.watch("order#"+orderId);
+                operations.multi();
+                operations.opsForValue().set("order#"+orderId,"none");
+                return operations.exec();
+            }
+        });
+        redisTemplate.delete("order#"+orderId);
+        int rows = orderDao.deleteUnAcceptOrder(param);
+        if(rows != 1){
+            return "订单取消失败";
+        }
+        return "订单取消成功";
     }
 
 }

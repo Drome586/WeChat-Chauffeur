@@ -26,6 +26,16 @@
             `status` = 2
         WHERE id = #{orderId}
     </update>
+    <delete id="deleteUnAcceptOrder">
+        DELETE FROM tb_order
+        WHERE id = #{orderId}
+        <if test="driverId!=null">
+            AND driver_id = #{driverId}
+        </if>
+        <if test="customerId!=null">
+            AND customer_id = #{customerId}
+        </if>
+    </delete>
 
     <select id="searchDriverTodayBusinessData" resultType="java.util.HashMap">
         SELECT IFNULL(SUM(TIMESTAMPDIFF(HOUR,end_time, start_time)),0) AS duration,
@@ -55,5 +65,16 @@
         FROM tb_order
         WHERE id = #{orderId}
         AND driver_id = #{driverId}
+    </select>
+    <select id="searchOrderStatus" resultType="java.lang.Integer">
+        SELECT status
+        FROM tb_order
+        WHERE id = #{orderId}
+        <if test="driverId != null">
+            AND driver_id = #{driverId}
+        </if>
+        <if test="customerId!=null">
+            AND customer_id = #{customerId}
+        </if>
     </select>
 </mapper>

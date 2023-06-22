@@ -13,5 +13,9 @@ public interface OrderService {
 
     public String acceptNewOrder(long driverId,long orderId);
 
-    public HashMap searchDriverExecuteOrder(HashMap param);
+    public HashMap searchDriverExecuteOrder(Map param);
+
+    public Integer searchOrderStatus(Map param);
+
+    public String deleteUnAcceptOrder(Map param);
 }
