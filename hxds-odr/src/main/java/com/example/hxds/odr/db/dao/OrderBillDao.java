@@ -9,6 +9,8 @@ public interface OrderBillDao {
 
     public int insert(OrderBillEntity entity);
 
+    public int deleteUnAcceptOrderBill(long orderId);
+
 }
 
 

@@ -2,10 +2,7 @@ package com.example.hxds.bff.customer.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
-import com.example.hxds.bff.customer.controller.form.CreateNewOrderForm;
-import com.example.hxds.bff.customer.controller.form.DeleteUnAcceptOrderForm;
-import com.example.hxds.bff.customer.controller.form.InsertOrderForm;
-import com.example.hxds.bff.customer.controller.form.SearchOrderStatusForm;
+import com.example.hxds.bff.customer.controller.form.*;
 import com.example.hxds.bff.customer.service.OrderService;
 import com.example.hxds.common.util.R;
 import io.swagger.v3.oas.annotations.Operation;
@@ -55,6 +52,17 @@ public class OrderController {
 
         String result = orderService.deleteUnAcceptOrder(form);
         return R.ok().put("result", result);
+    }
+
+    @PostMapping("/hasCustomerCurrentOrder")
+    @SaCheckLogin
+    @Operation(summary = "查询乘客是否存在当前的订单")
+    public R hasCustomerCurrentOrder(){
+        long customerId = StpUtil.getLoginIdAsLong();
+        HasCustomerCurrentOrderForm form = new HasCustomerCurrentOrderForm();
+        form.setCustomerId(customerId);
+        HashMap result = orderService.hasCustomerCurrentOrder(form);
+        return R.ok().put("result",result);
     }
 
 

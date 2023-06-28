@@ -2,9 +2,7 @@ package com.example.hxds.bff.driver.service.impl;
 
 import cn.hutool.core.map.MapUtil;
 import com.codingapi.txlcn.tc.annotation.LcnTransaction;
-import com.example.hxds.bff.driver.controller.form.AcceptNewOrderForm;
-import com.example.hxds.bff.driver.controller.form.SearchCustomerInfoInOrderForm;
-import com.example.hxds.bff.driver.controller.form.SearchDriverExecuteOrderForm;
+import com.example.hxds.bff.driver.controller.form.*;
 import com.example.hxds.bff.driver.feign.CstServiceApi;
 import com.example.hxds.bff.driver.feign.OdrServiceApi;
 import com.example.hxds.bff.driver.service.OrderService;
@@ -52,4 +50,36 @@ public class OrderServiceImpl implements OrderService {
         map.putAll(cstMap);
         return map;
     }
+
+    @Override
+    public HashMap searchDriverCurrentOrder(SearchDriverCurrentOrderForm form) {
+        R r = odrServiceApi.searchDriverCurrentOrder(form);
+        HashMap orderMap = (HashMap) r.get("result");
+
+        if(MapUtil.isNotEmpty(orderMap)){
+            HashMap map = new HashMap();
+            //查询代驾客户信息
+            Long customerId = MapUtil.getLong(orderMap, "customerId");
+            SearchCustomerInfoInOrderForm infoInOrderForm = new SearchCustomerInfoInOrderForm();
+            infoInOrderForm.setCustomerId(customerId);
+
+            //包括电话照片等。。。
+            r = cstServiceApi.searchCustomerInfoInOrder(infoInOrderForm);
+            HashMap cstMap = (HashMap) r.get("result");
+            map.putAll(orderMap);
+            map.putAll(cstMap);
+            return map;
+        }else{
+            return null;
+        }
+    }
+
+    @Override
+    public HashMap searchOrderForMoveById(SearchOrderForMoveByIdForm form) {
+        R r = odrServiceApi.searchOrderForMoveById(form);
+        HashMap result = (HashMap) r.get("result");
+        return result;
+    }
+
+
 }

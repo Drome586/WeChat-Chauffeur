@@ -123,7 +123,14 @@ public class OrderServiceImpl implements OrderService {
     public Integer searchOrderStatus(Map param) {
         Integer status = orderDao.searchOrderStatus(param);
         if(status == null){
-            throw new HxdsException("没有查询到数据，请核对查询条件");
+            //throw new HxdsException("没有查询到数据，请核对查询条件");
+            /*
+            后面的操作中把这个异常更改为status = 0；现在还有一种情况需要我们动脑子认真想想，比如说乘客下单成功之后，等待了5分钟，微信就闪退了。
+            过了5分钟之后，他重新登录小程序。因为抢单缓存还没有被销毁，而且订单和账单记录也都在，小程序跳转到create_order.vue页面，
+            重新从15分钟开始倒计时，但是倒计时过程中，抢单缓存会超时被销毁，同时订单和账单记录也都删除了。
+            这时候乘客端小程序发来轮询请求，业务层发现倒计时还没结束，但是抢单缓存就没有了，说明有司机抢单了，于是就跳转到司乘同显页面，这明显是不对的。
+             */
+            status = 0;
         }
         return status;
     }
@@ -146,12 +153,44 @@ public class OrderServiceImpl implements OrderService {
                 return operations.exec();
             }
         });
+        //删除订单记录
         redisTemplate.delete("order#"+orderId);
         int rows = orderDao.deleteUnAcceptOrder(param);
         if(rows != 1){
             return "订单取消失败";
         }
+        //删除订单金额表的记录
+        rows = orderBillDao.deleteUnAcceptOrderBill(orderId);
+        if(rows != 1){
+            return "订单取消失败";
+        }
+
         return "订单取消成功";
+    }
+
+    @Override
+    public HashMap searchDriverCurrentOrder(long driverId) {
+        HashMap map = orderDao.searchDriverCurrentOrder(driverId);
+        return map;
+    }
+
+    @Override
+    public HashMap hasCustomerCurrentOrder(long customerId) {
+        HashMap result = new HashMap();
+        HashMap map = orderDao.hasCustomerUnAcceptOrder(customerId);
+        result.put("hasCustomerUnAcceptOrder",map != null);
+        result.put("unAcceptOrder",map);
+
+        Long id = orderDao.hasCustomerUnFinishedOrder(customerId);
+        result.put("hasCustomerUnFinishedOrder",id != null);
+        result.put("unFinishedOrder",id);
+        return result;
+    }
+
+    @Override
+    public HashMap searchOrderForMoveById(Map param) {
+        HashMap map = orderDao.searchOrderForMoveById(param);
+        return map;
     }
 
 }

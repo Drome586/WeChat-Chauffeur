@@ -1,8 +1,6 @@
 package com.example.hxds.bff.driver.feign;
 
-import com.example.hxds.bff.driver.controller.form.AcceptNewOrderForm;
-import com.example.hxds.bff.driver.controller.form.SearchDriverExecuteOrderForm;
-import com.example.hxds.bff.driver.controller.form.SearchDriverTodayBusinessDataForm;
+import com.example.hxds.bff.driver.controller.form.*;
 import com.example.hxds.common.util.R;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,4 +17,9 @@ public interface OdrServiceApi {
     @PostMapping("/order/searchDriverExecuteOrder")
     public R searchDriverExecuteOrder(SearchDriverExecuteOrderForm form);
 
+    @PostMapping("/order/searchDriverCurrentOrder")
+    public R searchDriverCurrentOrder(SearchDriverCurrentOrderForm form);
+
+    @PostMapping("/order/searchOrderForMoveById")
+    public R searchOrderForMoveById(SearchOrderForMoveByIdForm form);
 }

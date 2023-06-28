@@ -23,6 +23,21 @@ public interface OrderDao {
     public Integer searchOrderStatus(Map param);
 
     public int deleteUnAcceptOrder(Map param);
+
+    //查询工作台页面正在执行的订单，这个时司机接单之后跳转过来的界面，并不司乘同显页面(司机端）
+    public HashMap searchDriverCurrentOrder(long driverId);
+
+    //查询没有司机接单的订单（乘客端）
+    public HashMap hasCustomerUnAcceptOrder(long customerId);
+
+    //查询还没有完成的订单号，（乘客端）
+    public Long hasCustomerUnFinishedOrder(long customerId);
+
+    //查询司乘同显页面，传过去的路径携带的是orderId
+    public HashMap searchOrderForMoveById(Map param);
+
+
+
 }
 
 

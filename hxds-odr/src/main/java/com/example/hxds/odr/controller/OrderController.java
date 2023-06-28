@@ -8,6 +8,7 @@ import com.example.hxds.odr.db.pojo.OrderBillEntity;
 import com.example.hxds.odr.db.pojo.OrderEntity;
 import com.example.hxds.odr.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -104,6 +105,28 @@ public class OrderController {
     public R deleteUnAcceptOrder(@RequestBody @Valid DeleteUnAcceptOrderForm form){
         Map param = BeanUtil.beanToMap(form);
         String result = orderService.deleteUnAcceptOrder(param);
+        return R.ok().put("result",result);
+    }
+
+    @PostMapping("/searchDriverCurrentOrder")
+    @Operation(summary = "查询司机当前订单")
+    public R searchDriverCurrentOrder(@RequestBody @Valid SearchDriverCurrentOrderForm form){
+        HashMap result = orderService.searchDriverCurrentOrder(form.getDriverId());
+        return R.ok().put("result",result);
+    }
+
+    @PostMapping("/hasCustomerCurrentOrder")
+    @Operation(summary = "查询乘客是否存在当前的订单")
+    public R hasCustomerCurrentOrder(@RequestBody @Valid HasCustomerCurrentOrderForm form){
+        HashMap map = orderService.hasCustomerCurrentOrder(form.getCustomerId());
+        return R.ok().put("result",map);
+    }
+
+    @PostMapping("/searchOrderForMoveById")
+    @Operation(summary = "查询订单信息用于司乘同显功能")
+    public R searchOrderForMoveById(@RequestBody @Valid SearchOrderForMoveByIdForm form){
+        Map param = BeanUtil.beanToMap(form);
+        HashMap result = orderService.searchOrderForMoveById(param);
         return R.ok().put("result",result);
     }
 

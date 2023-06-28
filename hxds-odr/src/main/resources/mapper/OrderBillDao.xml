@@ -15,4 +15,9 @@
             base_return_mileage = #{baseReturnMileage},
             exceed_return_price = #{exceedReturnPrice}
     </insert>
+    <delete id="deleteUnAcceptOrderBill">
+        DELETE
+        FROM tb_order_bill
+        WHERE order_id = #{orderId}
+    </delete>
 </mapper>
