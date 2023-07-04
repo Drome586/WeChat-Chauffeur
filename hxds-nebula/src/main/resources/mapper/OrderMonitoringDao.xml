@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace ：对应的mapper接口 -->
+<mapper namespace="com.example.hxds.nebula.db.dao.OrderMonitoringDao">
+    <!--
+        id : 对应接口的方法名称.
+        1.mapper接口中的全类名和映射文件中的namespace一致；
+        2.mapper接口中的方法的方法名要和映射文件中SQL中的id保持一致；
+    当字段名和属性名不一致的情况下，此时可以在mybatis核心配置文件设置一个全局配置，可以自动将下划线映射为驼峰
+    -->
+
+
+</mapper>
