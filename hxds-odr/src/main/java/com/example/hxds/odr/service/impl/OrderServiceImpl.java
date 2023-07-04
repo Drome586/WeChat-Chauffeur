@@ -193,4 +193,48 @@ public class OrderServiceImpl implements OrderService {
         return map;
     }
 
+    @Override
+    @LcnTransaction
+    @Transactional
+    public int arriveStartPlace(Map param) {
+        //添加到达上车点标志位
+        Long orderId = MapUtil.getLong(param,"orderId");
+        //"1"  当司机到达上车点后，乘客会点击“司机到达”按钮值变为“2”，当司机检查完车况后，点击开始代驾，后端会确认值是否为“2”是的话开始代驾。
+        redisTemplate.opsForValue().set("order_driver_arrivied#" + orderId,"1");
+        int rows = orderDao.updateOrderStatus(param);
+        if(rows!= 1){
+            throw new HxdsException("更新订单状态失败");
+        }
+        return rows;
+    }
+
+    @Override
+    public boolean confirmArriveStartPlace(long orderId) {
+        String key = "order_driver_arrivied#" + orderId;
+        if(redisTemplate.hasKey(key) && redisTemplate.opsForValue().get(key).toString().equals("1")){
+            redisTemplate.opsForValue().set(key,"2");
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    @LcnTransaction
+    @Transactional
+    public int startDriving(Map param) {
+        long orderId = MapUtil.getLong(param, "orderId");
+        String key = "order_driver_arrivied#" + orderId;
+
+        if(redisTemplate.hasKey(key) && redisTemplate.opsForValue().get(key).toString().endsWith("2")){
+            redisTemplate.delete(key);
+
+            int rows = orderDao.updateOrderStatus(param);
+            if(rows != 1){
+                throw new HxdsException("更新订单状态失败");
+            }
+            return rows;
+        }
+        return 0;
+    }
+
 }

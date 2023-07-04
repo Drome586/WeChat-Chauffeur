@@ -130,4 +130,29 @@ public class OrderController {
         return R.ok().put("result",result);
     }
 
+    @RequestMapping("/arriveStartPlace")
+    @Operation(description = "司机到达上车点")
+    public R arriveStartPlace(@RequestBody @Valid ArriveStartPlaceForm form){
+        Map param = BeanUtil.beanToMap(form);
+        param.put("status",3);
+        int rows = orderService.arriveStartPlace(param);
+        return R.ok().put("rows",rows);
+    }
+
+    @RequestMapping("/confirmArriveStartPlace")
+    @Operation(summary = "乘客确认司机到达上车点")
+    public R confirmArriveStartPlace(@RequestBody @Valid ConfirmArriveStartPlaceForm form){
+        boolean result = orderService.confirmArriveStartPlace(form.getOrderId());
+        return R.ok().put("result",result);
+    }
+
+    @PostMapping("/startDriving")
+    @Operation(summary = "开始代驾")
+    public R startDriving(@RequestBody @Valid StartDrivingForm form){
+        Map map = BeanUtil.beanToMap(form);
+        map.put("status",4);
+        int rows = orderService.startDriving(map);
+        return R.ok().put("rows",rows);
+    }
+
 }

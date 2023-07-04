@@ -188,4 +188,18 @@ public class OrderServiceImpl implements OrderService {
         HashMap map = (HashMap) r.get("result");
         return map;
     }
+
+    @Override
+    public HashMap searchOrderForMoveById(SearchOrderForMoveByIdForm form) {
+        R r = odrServiceApi.searchOrderForMoveById(form);
+        HashMap result = (HashMap) r.get("result");
+        return result;
+    }
+
+    @Override
+    public boolean confirmArriveStartPlace(ConfirmArriveStartPlaceForm form) {
+        R r = odrServiceApi.confirmArriveStartPlace(form);
+        Boolean result = MapUtil.getBool(r, "result");
+        return result;
+    }
 }

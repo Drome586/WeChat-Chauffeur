@@ -1,9 +1,6 @@
 package com.example.hxds.bff.customer.service;
 
-import com.example.hxds.bff.customer.controller.form.CreateNewOrderForm;
-import com.example.hxds.bff.customer.controller.form.DeleteUnAcceptOrderForm;
-import com.example.hxds.bff.customer.controller.form.HasCustomerCurrentOrderForm;
-import com.example.hxds.bff.customer.controller.form.SearchOrderStatusForm;
+import com.example.hxds.bff.customer.controller.form.*;
 
 import java.util.HashMap;
 
@@ -15,4 +12,8 @@ public interface OrderService {
     public String deleteUnAcceptOrder(DeleteUnAcceptOrderForm form);
 
     public HashMap hasCustomerCurrentOrder(HasCustomerCurrentOrderForm form);
+
+    public HashMap searchOrderForMoveById(SearchOrderForMoveByIdForm form);
+
+    public boolean confirmArriveStartPlace(ConfirmArriveStartPlaceForm form);
 }

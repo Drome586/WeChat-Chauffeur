@@ -2,9 +2,7 @@ package com.example.hxds.mps.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.example.hxds.common.util.R;
-import com.example.hxds.mps.controller.form.RemoveLocationCacheForm;
-import com.example.hxds.mps.controller.form.SearchBefittingDriverAboutOrderForm;
-import com.example.hxds.mps.controller.form.UpdateLocationCacheForm;
+import com.example.hxds.mps.controller.form.*;
 import com.example.hxds.mps.service.DriverLocationService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -50,6 +49,21 @@ public class DriverLocationController {
         ArrayList list = driverLocationService.searchBefittingDriverAboutOrder(startPlaceLatitude, startPlaceLongitude, endPlaceLatitude, endPlaceLongitude, mileage);
 
         return R.ok().put("result",list);
+    }
+
+    @PostMapping("/updateOrderLocationCache")
+    @Operation(summary = "更新订单定位缓存")
+    public R updateOrderLocationCache(@RequestBody @Valid UpdateOrderLocationCacheForm form){
+        Map map = BeanUtil.beanToMap(form);
+        driverLocationService.updateOrderLocationCache(map);
+        return R.ok();
+    }
+
+    @PostMapping("/searchOrderLocationCache")
+    @Operation(summary = "查询订单定位缓存")
+    public R searchOrderLocationCache(@RequestBody @Valid SearchOrderLocationCacheForm form){
+        HashMap result = driverLocationService.searchOrderLocationCache(form.getOrderId());
+        return R.ok().put("result",result);
     }
 
 }

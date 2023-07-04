@@ -36,6 +36,8 @@ public interface OrderDao {
     //查询司乘同显页面，传过去的路径携带的是orderId
     public HashMap searchOrderForMoveById(Map param);
 
+    //司机确认到达上车点
+    public int updateOrderStatus(Map param);
 
 
 }

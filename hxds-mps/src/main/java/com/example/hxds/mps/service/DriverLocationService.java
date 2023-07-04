@@ -1,6 +1,7 @@
 package com.example.hxds.mps.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public interface DriverLocationService {
@@ -15,4 +16,13 @@ public interface DriverLocationService {
                                                      double endPlaceLatitude,
                                                      double endPlaceLongitude,
                                                      double mileage);
+
+
+    //司乘同显
+    public void updateOrderLocationCache(Map param);
+
+    //查找订单司机实时位置，用于司乘同显
+    public HashMap searchOrderLocationCache(long orderId);
+
+
 }

@@ -24,4 +24,11 @@ public interface OrderService {
     public HashMap hasCustomerCurrentOrder(long customerId);
 
     public HashMap searchOrderForMoveById(Map param);
+
+    public int arriveStartPlace(Map param);
+
+    //乘客端确认司机已到达
+    public boolean confirmArriveStartPlace(long orderId);
+
+    public int startDriving(Map param);
 }
