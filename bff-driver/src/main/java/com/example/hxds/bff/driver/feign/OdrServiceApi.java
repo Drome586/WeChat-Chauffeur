@@ -28,4 +28,7 @@ public interface OdrServiceApi {
 
     @PostMapping("/order/startDriving")
     public R startDriving(StartDrivingForm form);
+
+    @PostMapping("/order/updateOrderStatus")
+    public R updateOrderStatus(UpdateOrderStatusForm form);
 }

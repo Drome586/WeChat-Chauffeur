@@ -7,6 +7,7 @@ import com.example.hxds.odr.controller.form.*;
 import com.example.hxds.odr.db.pojo.OrderBillEntity;
 import com.example.hxds.odr.db.pojo.OrderEntity;
 import com.example.hxds.odr.service.OrderService;
+import io.protostuff.Request;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -153,6 +154,14 @@ public class OrderController {
         map.put("status",4);
         int rows = orderService.startDriving(map);
         return R.ok().put("rows",rows);
+    }
+
+    @PostMapping("/updateOrderStatus")
+    @Operation(summary = "更新订单状态")
+    public R updateOrderStatus(@RequestBody @Valid UpdateOrderStatusForm form){
+        Map map = BeanUtil.beanToMap(form);
+        int rows = orderService.updateOrderStatus(map);
+       return R.ok().put("rows",rows);
     }
 
 }

@@ -16,4 +16,6 @@ public interface OrderService {
     public int arriveStartPlace(ArriveStartPlaceForm form);
 
     public int startDriving(StartDrivingForm form);
+
+    public int updateOrderStatus(UpdateOrderStatusForm form);
 }

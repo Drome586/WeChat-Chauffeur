@@ -31,4 +31,7 @@ public interface OrderService {
     public boolean confirmArriveStartPlace(long orderId);
 
     public int startDriving(Map param);
+
+    //更新代驾过程中的状态，结束代驾
+    public int updateOrderStatus(Map param);
 }

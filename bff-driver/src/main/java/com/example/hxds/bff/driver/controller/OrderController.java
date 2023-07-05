@@ -87,4 +87,12 @@ public class OrderController {
         int rows = orderService.startDriving(form);
         return R.ok().put("rows",rows);
     }
+
+    @PostMapping("/updateOrderStatus")
+    @Operation(summary = "更新订单状态")
+    @SaCheckLogin
+    public R updateOrderStatus(@RequestBody @Valid UpdateOrderStatusForm form){
+        int rows = orderService.updateOrderStatus(form);
+        return R.ok().put("rows",rows);
+    }
 }

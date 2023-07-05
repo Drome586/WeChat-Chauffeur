@@ -13,4 +13,8 @@
     -->
 
 
+    <insert id="insert">
+        UPSERT INTO hxds.order_voice_text("id", "uuid", "order_id", "record_file", "text", "create_time")
+        VALUES(NEXT VALUE FOR hxds.ovt_sequence, '${uuid}', #{orderId}, '${recordFile}', '${text}', NOW())
+    </insert>
 </mapper>
