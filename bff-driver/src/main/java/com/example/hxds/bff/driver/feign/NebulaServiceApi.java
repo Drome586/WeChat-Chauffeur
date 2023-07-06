@@ -1,6 +1,8 @@
 package com.example.hxds.bff.driver.feign;
 
 import com.example.hxds.bff.driver.config.MultipartSupportConfig;
+import com.example.hxds.bff.driver.controller.form.InsertOrderGpsForm;
+import com.example.hxds.bff.driver.controller.form.InsertOrderMonitoringForm;
 import com.example.hxds.common.util.R;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -18,5 +20,10 @@ public interface NebulaServiceApi {
                               @RequestPart("name") String name,
                               @RequestPart(value = "text", required = false) String text);
 
+    @PostMapping(value = "/monitoring/insertOrderMonitoring")
+    public R insertOrderMonitoring(InsertOrderMonitoringForm form);
+
+    @PostMapping("/order/gps/insertOrderGps")
+    public R insertOrderGps(InsertOrderGpsForm form);
 }
 

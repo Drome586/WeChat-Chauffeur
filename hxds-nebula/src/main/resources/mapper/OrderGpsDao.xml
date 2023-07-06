@@ -13,4 +13,8 @@
     -->
 
 
+    <insert id="insert">
+        UPSERT INTO hxds.order_gps("id", "order_id", "driver_id", "customer_id", "latitude", "longitude", "speed", "create_time")
+        VALUES(NEXT VALUE FOR hxds.og_sequence, ${orderId}, ${driverId}, ${customerId}, '${latitude}', '${longitude}', '${speed}', NOW())
+    </insert>
 </mapper>

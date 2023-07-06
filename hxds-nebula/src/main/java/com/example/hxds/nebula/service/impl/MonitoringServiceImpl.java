@@ -2,9 +2,11 @@ package com.example.hxds.nebula.service.impl;
 
 import cn.hutool.core.util.IdUtil;
 import com.example.hxds.common.exception.HxdsException;
+import com.example.hxds.nebula.db.dao.OrderMonitoringDao;
 import com.example.hxds.nebula.db.dao.OrderVoiceTextDao;
 import com.example.hxds.nebula.db.pojo.OrderVoiceTextEntity;
 import com.example.hxds.nebula.service.MonitoringService;
+import com.example.hxds.nebula.task.VoiceTextCheckTask;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,12 @@ import javax.annotation.Resource;
 public class MonitoringServiceImpl implements MonitoringService {
     @Resource
     private OrderVoiceTextDao orderVoiceTextDao;
+
+    @Resource
+    private OrderMonitoringDao orderMonitoringDao;
+
+    @Resource
+    private VoiceTextCheckTask voiceTextCheckTask;
 
     @Value("${minio.endpoint}")
     private String endpoint;
@@ -64,7 +72,18 @@ public class MonitoringServiceImpl implements MonitoringService {
         }
 
         //TODO 执行文稿内容审查
+        voiceTextCheckTask.checkText(orderId,text,uuid);
 
+    }
+
+    @Override
+    @Transactional
+    public int insertOrderMonitoring(long orderId) {
+        int rows = orderMonitoringDao.insert(orderId);
+        if(rows != 1){
+            throw new HxdsException("添加订单监控摘要记录失败");
+        }
+        return rows;
     }
 }
 

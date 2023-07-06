@@ -17,4 +17,18 @@
         UPSERT INTO hxds.order_voice_text("id", "uuid", "order_id", "record_file", "text", "create_time")
         VALUES(NEXT VALUE FOR hxds.ovt_sequence, '${uuid}', #{orderId}, '${recordFile}', '${text}', NOW())
     </insert>
+    <update id="updateCheckResult">
+        UPSERT INTO hxds.order_voice_text("id","label","suggestion","keywords")
+        VALUES(#{id},'${label}','${suggestion}',
+        <if test="keywords!=null">
+            '${keywords}'
+        </if>
+        <if test="keywords==null">
+            NULL
+        </if>
+        )
+    </update>
+    <select id="searchIdByUuid" resultType="java.lang.Long">
+        SELECT "id" FROM hxds.order_voice_text WHERE "uuid" = '${uuid}'
+    </select>
 </mapper>
