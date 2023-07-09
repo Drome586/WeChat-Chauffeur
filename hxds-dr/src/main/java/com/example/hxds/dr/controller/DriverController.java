@@ -96,4 +96,11 @@ public class DriverController {
         int rows = driverService.updateDriverRealAuth(param);
         return R.ok().put("rows",rows);
     }
+
+    @PostMapping("/searchDriverBriefInfo")
+    @Operation(summary = "查询司机简明信息")
+    public R searchDriverBriefInfo(@RequestBody @Valid SearchDriverBriefInfoForm form){
+        HashMap map = driverService.searchDriverBriefInfo(form.getDriverId());
+        return R.ok().put("result",map);
+    }
 }

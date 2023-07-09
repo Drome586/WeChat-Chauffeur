@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.example.hxds.common.util.R;
 import com.example.hxds.cst.controller.form.LoginForm;
 import com.example.hxds.cst.controller.form.RegisterNewCustomerForm;
+import com.example.hxds.cst.controller.form.SearchCustomerBriefInfoForm;
 import com.example.hxds.cst.controller.form.SearchCustomerInfoInOrder;
 import com.example.hxds.cst.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,6 +46,13 @@ public class CustomerController {
     public R searchCustomerInfoInOrder(@RequestBody @Valid SearchCustomerInfoInOrder form){
         HashMap map = customerService.searchCustomerInfoInOrder(form.getCustomerId());
         return R.ok().put("result",map);
+    }
+
+    @PostMapping("/searchCustomerBriefInfo")
+    @Operation(summary = "MIS系统查询客户简明信息")
+    public R searchCustomerBriefInfo(@RequestBody @Valid SearchCustomerBriefInfoForm form){
+        HashMap result = customerService.searchCustomerBriefInfo(form.getCustomerId());
+        return R.ok().put("result",result);
     }
 
 }

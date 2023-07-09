@@ -1,9 +1,7 @@
 package com.example.hxds.mis.api.feign;
 
 import com.example.hxds.common.util.R;
-import com.example.hxds.mis.api.controller.form.SearchDriverByPageForm;
-import com.example.hxds.mis.api.controller.form.SearchDriverRealSummaryForm;
-import com.example.hxds.mis.api.controller.form.UpdateDriverRealAuthForm;
+import com.example.hxds.mis.api.controller.form.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -18,4 +16,10 @@ public interface DrServiceApi {
 
     @PostMapping("/driver/updateDriverRealAuth")
     public R updateDriverRealAuth(UpdateDriverRealAuthForm form);
+
+    @PostMapping("/order/searchOrderByPage")
+    public R searchOrderByPage(SearchOrderByPageForm form);
+
+    @PostMapping("/driver/searchDriverBriefInfo")
+    public R searchDriverBriefInfo(SearchDriverBriefInfoForm form);
 }

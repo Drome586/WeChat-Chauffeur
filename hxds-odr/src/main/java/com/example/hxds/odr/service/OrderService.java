@@ -1,5 +1,7 @@
 package com.example.hxds.odr.service;
 
+import cn.hutool.core.util.PageUtil;
+import com.example.hxds.common.util.PageUtils;
 import com.example.hxds.odr.db.pojo.OrderBillEntity;
 import com.example.hxds.odr.db.pojo.OrderEntity;
 
@@ -34,4 +36,8 @@ public interface OrderService {
 
     //更新代驾过程中的状态，结束代驾
     public int updateOrderStatus(Map param);
+
+    public PageUtils searchOrderByPage(Map param);
+
+    public HashMap searchOrderContent(long orderId);
 }

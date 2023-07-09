@@ -39,6 +39,14 @@ public interface OrderDao {
     //司机确认到达上车点
     public int updateOrderStatus(Map param);
 
+    //查询总数用于MIS管理
+    public long searchOrderCount(Map param);
+    //MIS
+    public ArrayList<HashMap> searchOrderByPage(Map param);
+
+    //MIS下拉列表查询
+    public HashMap searchOrderContent(long orderId);
+
 
 }
 

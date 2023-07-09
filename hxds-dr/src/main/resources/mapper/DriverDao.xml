@@ -193,4 +193,11 @@
         FROM tb_driver
         WHERE id = #{driverId}
     </select>
+    <select id="searchDriverBriefInfo" resultType="java.util.HashMap">
+        SELECT CAST(id AS CHAR) AS id,
+               `name`,
+               tel
+        FROM tb_driver
+        WHERE id = #{driverId}
+    </select>
 </mapper>

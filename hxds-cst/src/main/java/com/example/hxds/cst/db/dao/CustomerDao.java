@@ -14,4 +14,6 @@ public interface CustomerDao {
 
     public HashMap searchCustomerOrderInfoInOrder(long customerId);
 
+    public HashMap searchCustomerBriefInfo(long customerId);
+
 }
