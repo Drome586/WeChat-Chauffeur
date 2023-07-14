@@ -47,6 +47,14 @@ public interface OrderDao {
     //MIS下拉列表查询
     public HashMap searchOrderContent(long orderId);
 
+    public ArrayList<String> searchOrderStartLocationIn30Days();
+
+    public int updateOrderMileageAndFee(Map param);
+
+    public long validDriverOwnOrder(Map param);
+
+    public HashMap searchSettlementNeedData(long driverId);
+
 
 }
 

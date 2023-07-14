@@ -7,6 +7,7 @@ import com.example.hxds.common.util.R;
 import com.example.hxds.odr.controller.form.*;
 import com.example.hxds.odr.db.pojo.OrderBillEntity;
 import com.example.hxds.odr.db.pojo.OrderEntity;
+import com.example.hxds.odr.service.OrderBillService;
 import com.example.hxds.odr.service.OrderService;
 import io.protostuff.Request;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,6 +32,9 @@ public class OrderController {
 
     @Resource
     private OrderService orderService;
+
+    @Resource
+    private OrderBillService orderBillService;
 
     @PostMapping("/searchDriverTodayBusinessData")
     @Operation(summary = "查询司机当天营业数据")
@@ -150,11 +155,11 @@ public class OrderController {
 
     @PostMapping("/startDriving")
     @Operation(summary = "开始代驾")
-    public R startDriving(@RequestBody @Valid StartDrivingForm form){
-        Map map = BeanUtil.beanToMap(form);
-        map.put("status",4);
-        int rows = orderService.startDriving(map);
-        return R.ok().put("rows",rows);
+    public R startDriving(@RequestBody @Valid StartDrivingForm form) {
+        Map param = BeanUtil.beanToMap(form);
+        param.put("status", 4);
+        int rows = orderService.startDriving(param);
+        return R.ok().put("rows", rows);
     }
 
     @PostMapping("/updateOrderStatus")
@@ -182,6 +187,30 @@ public class OrderController {
     @Operation(summary = "MIS系统中查询下拉列表中订单详情")
     public R searchOrderContent(@RequestBody @Valid SearchOrderContentForm form){
         HashMap map = orderService.searchOrderContent(form.getOrderId());
+        return R.ok().put("result",map);
+    }
+
+    @PostMapping("/searchOrderStartLocationIn30Days")
+    @Operation(summary = "查询30天以内订单上车点的位置")
+    public R searchOrderStartLocationIn30Days(){
+        ArrayList<HashMap> result = orderService.searchOrderStartLocationIn30Days();
+        return R.ok().put("result",result);
+    }
+
+
+
+    @PostMapping("/validDriverOwnOrder")
+    @Operation(summary = "查询司机是否关联某订单")
+    public R validDriverOwnOrder(@RequestBody @Valid ValidDriverOwnOrderForm form){
+        Map map = BeanUtil.beanToMap(form);
+        boolean bool = orderService.validDriverOwnOrder(map);
+        return R.ok().put("result",bool);
+    }
+
+    @PostMapping("/searchSettlementNeedData")
+    @Operation(summary = "查询订单的开始和等时")
+    public R searchSettlementNeedData(@RequestBody @Valid SearchSettlementNeedDataForm form){
+        HashMap map = orderService.searchSettlementNeedData(form.getOrderId());
         return R.ok().put("result",map);
     }
 

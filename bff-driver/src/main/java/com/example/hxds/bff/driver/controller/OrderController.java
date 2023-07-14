@@ -6,6 +6,7 @@ import com.example.hxds.bff.driver.controller.form.*;
 import com.example.hxds.bff.driver.service.OrderService;
 import com.example.hxds.common.util.R;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -96,5 +97,13 @@ public class OrderController {
         return R.ok().put("rows",rows);
     }
 
-
+    @PostMapping("/updateBillFee")
+    @SaCheckLogin
+    @Operation(summary = "更新订单账单费用")
+    public R updateBillFee(@RequestBody @Valid UpdateBillFeeForm form){
+        long driverId = StpUtil.getLoginIdAsLong();
+        form.setDriverId(driverId);
+        int rows = orderService.updateOrderBill(form);
+        return R.ok().put("rows",rows);
+    }
 }

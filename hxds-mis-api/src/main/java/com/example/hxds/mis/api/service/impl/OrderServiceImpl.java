@@ -1,6 +1,7 @@
 package com.example.hxds.mis.api.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import com.example.hxds.common.exception.HxdsException;
 import com.example.hxds.common.util.PageUtils;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -135,5 +137,39 @@ public class OrderServiceImpl implements OrderService {
             map.put("lastGps", lastGps);
         }
         return map;
+    }
+
+    @Override
+    public HashMap searchOrderLastGps(SearchOrderLastGpsForm form) {
+        SearchOrderStatusForm statusForm = new SearchOrderStatusForm();
+        statusForm.setOrderId(form.getOrderId());
+        R r = odrServiceApi.searchOrderStatus(statusForm);
+        if (!r.containsKey("result")) {
+            throw new HxdsException("没有对应的订单记录");
+        }
+        int status = MapUtil.getInt(r, "result");
+        if (status == 4) {
+            //查询订单最后的GPS记录
+            r = nebulaServiceApi.searchOrderLastGps(form);
+            HashMap lastGps = (HashMap) r.get("result");
+            return lastGps;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public ArrayList<HashMap> searchOrderStartLocationIn30Days() {
+        R r = odrServiceApi.searchOrderStartLocationIn30Days();
+        ArrayList<HashMap> list = (ArrayList<HashMap>) r.get("result");
+        ArrayList<HashMap> result = new ArrayList<>();
+        Map<HashMap, Integer> map = CollectionUtil.countMap(list);
+        map.forEach((key, value) -> {
+            key.replace("latitude", MapUtil.getDouble(key, "latitude"));
+            key.replace("longitude", MapUtil.getDouble(key, "longitude"));
+            key.put("count", value);
+            result.add(key);
+        });
+        return result;
     }
 }

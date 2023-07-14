@@ -11,6 +11,8 @@ public interface OrderBillDao {
 
     public int deleteUnAcceptOrderBill(long orderId);
 
+    public int updateBillFee(Map param);
+
 }
 
 

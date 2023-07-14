@@ -2,6 +2,7 @@ package com.example.hxds.nebula.controller;
 
 
 import com.example.hxds.common.util.R;
+import com.example.hxds.nebula.controller.form.CalculateOrderMileageForm;
 import com.example.hxds.nebula.controller.form.InsertOrderGpsForm;
 import com.example.hxds.nebula.controller.form.SearchOrderGpsForm;
 import com.example.hxds.nebula.controller.form.SearchOrderLastGpsForm;
@@ -47,5 +48,12 @@ public class OrderGpsController {
     public R searchOrderLastGps(@RequestBody @Valid SearchOrderLastGpsForm form){
         HashMap map = orderGpsService.searchOrderLastGps(form.getOrderId());
         return R.ok().put("result",map);
+    }
+
+    @PostMapping("/calculateOrderMileage")
+    @Operation(summary = "计算订单里程")
+    public R calculateOrderMileage(@RequestBody @Valid CalculateOrderMileageForm form){
+        String mileage = orderGpsService.calculateOrderMileage(form.getOrderId());
+        return R.ok().put("result",mileage);
     }
 }

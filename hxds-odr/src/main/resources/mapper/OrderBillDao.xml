@@ -15,6 +15,18 @@
             base_return_mileage = #{baseReturnMileage},
             exceed_return_price = #{exceedReturnPrice}
     </insert>
+    <update id="updateBillFee">
+        UPDATE tb_order_bill
+        SET total         = #{total},
+            mileage_fee   = #{mileageFee},
+            waiting_fee   = #{waitingFee},
+            toll_fee      = #{tollFee},
+            parking_fee   = #{parkingFee},
+            other_fee    = #{otherFee},
+            return_fee    = #{returnFee},
+            incentive_fee = #{incentiveFee}
+        WHERE order_id = #{orderId}
+    </update>
     <delete id="deleteUnAcceptOrderBill">
         DELETE
         FROM tb_order_bill

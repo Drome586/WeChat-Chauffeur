@@ -2,6 +2,7 @@ package com.example.hxds.odr.service.impl;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSON;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.codingapi.txlcn.tc.annotation.LcnTransaction;
 import com.example.hxds.common.exception.HxdsException;
@@ -277,6 +278,38 @@ public class OrderServiceImpl implements OrderService {
         map.replace("startPlaceLocation",startPlaceLocation);
         map.replace("endPlaceLocation",endPlaceLocation);
 
+        return map;
+    }
+
+    @Override
+    public ArrayList<HashMap> searchOrderStartLocationIn30Days() {
+        ArrayList<String> list = orderDao.searchOrderStartLocationIn30Days();
+        ArrayList<HashMap> result = new ArrayList();
+        list.forEach(location->{
+            JSONObject json = JSONUtil.parseObj(location);
+            String latitude = json.getStr("latitude");
+            String longitude = json.getStr("longitude");
+            latitude = latitude.substring(0, latitude.length() - 4);
+            longitude = longitude.substring(0,longitude.length()-4);
+            latitude += "0001";
+            longitude +="0001";
+            HashMap map = new HashMap();
+            map.put("latitude",latitude);
+            map.put("longitude",longitude);
+            result.add(map);
+        });
+        return result;
+    }
+
+    @Override
+    public boolean validDriverOwnOrder(Map param) {
+        long count = orderDao.validDriverOwnOrder(param);
+        return count == 1?true:false;
+    }
+
+    @Override
+    public HashMap searchSettlementNeedData(long orderId) {
+        HashMap map = orderDao.searchSettlementNeedData(orderId);
         return map;
     }
 

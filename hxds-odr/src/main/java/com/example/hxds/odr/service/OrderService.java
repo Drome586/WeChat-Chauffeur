@@ -5,6 +5,7 @@ import com.example.hxds.common.util.PageUtils;
 import com.example.hxds.odr.db.pojo.OrderBillEntity;
 import com.example.hxds.odr.db.pojo.OrderEntity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,4 +41,11 @@ public interface OrderService {
     public PageUtils searchOrderByPage(Map param);
 
     public HashMap searchOrderContent(long orderId);
+
+    //返回热点图
+    public ArrayList<HashMap> searchOrderStartLocationIn30Days();
+
+    public boolean validDriverOwnOrder(Map param);
+
+    public HashMap searchSettlementNeedData(long orderId);
 }

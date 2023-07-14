@@ -8,6 +8,8 @@ import java.util.HashMap;
 
 public interface OrderProfitsharingDao {
 
+    public int insert(OrderProfitsharingEntity entity);
+
 }
 
 

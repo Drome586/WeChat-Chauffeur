@@ -48,6 +48,14 @@
             AND driver_id = #{driverId}
         </if>
     </update>
+    <update id="updateOrderMileageAndFee">
+        UPDATE tb_order
+        SET real_mileage   = #{realMileage},
+            return_mileage = #{returnMileage},
+            incentive_fee  = #{incentiveFee},
+            real_fee       = #{total}
+        WHERE id = #{orderId}
+    </update>
 
     <delete id="deleteUnAcceptOrder">
         DELETE FROM tb_order
@@ -220,5 +228,25 @@
         FROM tb_order o
         LEFT JOIN tb_order_profitsharing p ON o.id = p.order_id
         WHERE o.id = #{orderId}
+    </select>
+    <select id="searchOrderStartLocationIn30Days" resultType="java.lang.String">
+        SELECT start_place_location
+        FROM tb_order
+        WHERE start_time IS NOT NULL
+          AND start_time BETWEEN TIMESTAMPADD(DAY,-30, NOW()) AND NOW();
+    </select>
+    <select id="validDriverOwnOrder" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM tb_order
+        WHERE id = #{orderId}
+          AND driver_id = #{driverId}
+    </select>
+    <select id="searchSettlementNeedData" resultType="java.util.HashMap">
+        SELECT DATE_FORMAT(accept_time, '%Y-%m-%d %H:%i:%s') AS acceptTime,
+               DATE_FORMAT(start_time, '%Y-%m-%d %H:%i:%s')  AS startTime,
+               waiting_minute                                AS waitingMinute,
+               CAST(favour_fee AS CHAR)                      AS favourFee
+        FROM tb_order
+        WHERE id = #{orderId};
     </select>
 </mapper>
