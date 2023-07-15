@@ -40,4 +40,7 @@ public interface OdrServiceApi {
 
     @PostMapping("/bill/updateBillFee")
     public R updateBillFee(UpdateBillFeeForm form);
+
+    @PostMapping("/bill/searchReviewDriverOrderBill")
+    public R searchReviewDriverOrderBill(SearchReviewDriverOrderBillForm form);
 }

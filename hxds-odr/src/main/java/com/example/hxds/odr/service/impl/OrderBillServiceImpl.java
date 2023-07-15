@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -60,5 +61,11 @@ public class OrderBillServiceImpl implements OrderBillService {
         }
 
         return 0;
+    }
+
+    @Override
+    public HashMap searchReviewDriverOrderBill(Map param) {
+        HashMap map = orderBillDao.searchReviewDriverOrderBill(param);
+        return map;
     }
 }

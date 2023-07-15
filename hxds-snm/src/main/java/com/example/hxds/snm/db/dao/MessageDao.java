@@ -26,6 +26,10 @@ public class MessageDao {
 
     public String insert(MessageEntity entity) {
         Date sendTime = entity.getSendTime();
+        /*
+        MongoDB使用的时区是格林尼治（比北京晚8小时）
+        保存的日期会自动呗MongoDB减去8小时，所以我们提前给日期增加8小时
+         */
         sendTime = DateUtil.offset(sendTime, DateField.HOUR, 8);
         entity.setSendTime(sendTime);
         entity = mongoTemplate.save(entity);

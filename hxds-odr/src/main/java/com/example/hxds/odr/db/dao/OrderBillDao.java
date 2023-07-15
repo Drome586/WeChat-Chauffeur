@@ -13,6 +13,9 @@ public interface OrderBillDao {
 
     public int updateBillFee(Map param);
 
+    //查询汇总出来的金额，显示到小程序
+    public HashMap searchReviewDriverOrderBill(Map param);
+
 }
 
 
