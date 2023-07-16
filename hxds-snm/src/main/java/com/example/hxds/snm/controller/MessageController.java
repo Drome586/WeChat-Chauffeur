@@ -1,7 +1,8 @@
-package com.example.hxds.snm.controller.form;
+package com.example.hxds.snm.controller;
 
 
 import com.example.hxds.common.util.R;
+import com.example.hxds.snm.controller.form.*;
 import com.example.hxds.snm.db.pojo.MessageEntity;
 import com.example.hxds.snm.service.MessageService;
 import com.example.hxds.snm.task.MessageTask;
@@ -90,5 +91,12 @@ public class MessageController {
         entity.setSendTime(new Date());
         messageTask.sendPrivateMessageAsync(form.getReceiverIdentity(), form.getReceiverId(), form.getTtl(), entity);
         return R.ok();
+    }
+
+    @PostMapping("/receiveBillMessage")
+    @Operation(summary = "同步接收新订单消息")
+    public R receiveBillMessage(@RequestBody @Valid ReceiveBillMessageForm form) {
+        String msg = messageTask.receiveBillMessage(form.getIdentity(), form.getUserId());
+        return R.ok().put("result", msg);
     }
 }

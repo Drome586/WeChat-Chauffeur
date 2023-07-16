@@ -213,5 +213,51 @@ public class MessageTask {
         deleteQueue(identity, userId);
     }
 
+    /*
+    顾客接收账单消息的方法
+     */
+    public String receiveBillMessage(String identity,long userId){
+        String exchangeName = identity + "_private"; //交换机名字
+        String queueName = "queue_" + userId; //队列名字
+        String routingKey = userId + ""; //routing key
+
+        try (
+                Connection connection = factory.newConnection();
+                Channel channel = connection.createChannel();
+        ) {
+            channel.exchangeDeclare(exchangeName, BuiltinExchangeType.DIRECT);
+            channel.queueDeclare(queueName, true, false, false, null);
+            channel.queueBind(queueName, exchangeName, routingKey);
+            channel.basicQos(0, 1, true);
+
+            GetResponse response = channel.basicGet(queueName, false);
+            if (response != null) {
+                AMQP.BasicProperties properties = response.getProps();
+                Map<String, Object> map = properties.getHeaders();
+                String messageId = map.get("messageId").toString();
+                byte[] body = response.getBody();
+                String msg = new String(body);
+                log.debug("从RabbitMQ接收的订单消息：" + msg);
+
+                //把接收到的消息保存到MessageRef集合
+                MessageRefEntity entity = new MessageRefEntity();
+                entity.setMessageId(messageId);
+                entity.setReceiverId(userId);
+                entity.setReceiverIdentity(identity);
+                entity.setReadFlag(true);
+                entity.setLastFlag(true);
+                messageService.insertRef(entity);
+
+                long deliveryTag = response.getEnvelope().getDeliveryTag();
+                channel.basicAck(deliveryTag, false);
+                return msg;
+            }
+            return "";
+        } catch (Exception e) {
+            log.error("执行异常", e);
+            throw new HxdsException("接收新订单失败");
+        }
+    }
+
 }
 
