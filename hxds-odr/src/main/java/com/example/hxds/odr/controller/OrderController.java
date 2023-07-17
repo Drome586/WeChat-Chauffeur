@@ -214,4 +214,28 @@ public class OrderController {
         return R.ok().put("result",map);
     }
 
+    @PostMapping("/searchOrderById")
+    @Operation(summary = "根据Id查询订单信息")
+    public R searchOrderById(@RequestBody @Valid SearchOrderByIdForm form){
+        Map map = BeanUtil.beanToMap(form);
+        HashMap result = orderService.searchOrderById(map);
+        return R.ok().put("result",result);
+    }
+    @PostMapping("/validCanPayOrder")
+    @Operation(summary = "检查订单是否可以支付,并且返回uuid")
+    public R validCanPayOrder(@RequestBody @Valid ValidCanPayOrderForm form) {
+        Map param = BeanUtil.beanToMap(form);
+        HashMap map = orderService.validCanPayOrder(param);
+        return R.ok().put("result", map);
+    }
+
+    @PostMapping("/updateOrderPrepayId")
+    @Operation(summary = "更新预支付订单ID")
+    public R updateOrderPrepayId(@RequestBody @Valid UpdateOrderPrepayIdForm form) {
+        Map param = BeanUtil.beanToMap(form);
+        int rows = orderService.updateOrderPrepayId(param);
+        return R.ok().put("rows", rows);
+    }
+
+
 }

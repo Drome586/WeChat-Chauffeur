@@ -3,14 +3,17 @@ package com.example.hxds.bff.customer.service.impl;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.NumberUtil;
 import com.codingapi.txlcn.tc.annotation.LcnTransaction;
 import com.example.hxds.bff.customer.controller.form.*;
-import com.example.hxds.bff.customer.feign.MpsServiceApi;
-import com.example.hxds.bff.customer.feign.OdrServiceApi;
-import com.example.hxds.bff.customer.feign.RuleServiceApi;
-import com.example.hxds.bff.customer.feign.SnmServiceApi;
+import com.example.hxds.bff.customer.feign.*;
 import com.example.hxds.bff.customer.service.OrderService;
+import com.example.hxds.common.exception.HxdsException;
 import com.example.hxds.common.util.R;
+import com.example.hxds.common.wxpay.MyWXPayConfig;
+import com.example.hxds.common.wxpay.WXPay;
+import com.example.hxds.common.wxpay.WXPayUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +21,13 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 
 @Service
+@Slf4j
 public class OrderServiceImpl implements OrderService {
 
     @Resource
@@ -36,6 +41,18 @@ public class OrderServiceImpl implements OrderService {
 
     @Resource
     private SnmServiceApi snmServiceApi;
+
+    @Resource
+    private DrServiceApi drServiceApi;
+
+    @Resource
+    private VhrServiceApi vhrServiceApi;
+
+    @Resource
+    private MyWXPayConfig myWXPayConfig;
+
+    @Resource
+    private CstServiceApi cstServiceApi;
 
     @Override
     @LcnTransaction
@@ -201,5 +218,153 @@ public class OrderServiceImpl implements OrderService {
         R r = odrServiceApi.confirmArriveStartPlace(form);
         Boolean result = MapUtil.getBool(r, "result");
         return result;
+    }
+
+    @Override
+    public HashMap searchOrderById(SearchOrderByIdForm form) {
+        R r = odrServiceApi.searchOrderById(form);
+        HashMap map = (HashMap) r.get("result");
+        Long driverId = MapUtil.getLong(map, "driverId");
+        if(driverId != null){
+            SearchDriverBriefInfoForm form_1 = new SearchDriverBriefInfoForm();
+            form_1.setDriverId(driverId);
+            r = drServiceApi.searchDriverBriefInfo(form_1);
+            HashMap temp = (HashMap) r.get("result");
+            map.putAll(temp);
+            return map;
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional
+    @LcnTransaction
+    public HashMap createWxPayment(long orderId, long customerId, Long voucherId) {
+        /*
+        先查询订单是否为6状态，其他状态都不可以生成订单
+         */
+        ValidCanPayOrderForm form_1 = new ValidCanPayOrderForm();
+        form_1.setOrderId(orderId);
+        form_1.setCustomerId(customerId);
+        R r = odrServiceApi.validCanPayOrder(form_1);
+        HashMap map = (HashMap) r.get("result");
+        //总金额
+        String amount = MapUtil.getStr(map,"realFee");
+        //uuid是支付订单编号，并不想用雪花算法生成的id，因为雪花算法生成的id是有顺序性的，有据可循的不安全
+        String uuid = MapUtil.getStr(map,"uuid");
+        long driverId = MapUtil.getLong(map,"driverId");
+        //代金券的面额大小
+        String discount = "0.00";
+
+        if(voucherId != null){
+            /*
+            查询代金券是否可以使用
+             */
+            UseVoucherForm form_2 = new UseVoucherForm();
+            form_2.setCustomerId(customerId);
+            form_2.setOrderId(orderId);
+            form_2.setVoucherId(voucherId);
+            form_2.setAmount(amount);
+            r = vhrServiceApi.useVoucher(form_2);
+            discount = MapUtil.getStr(r,"result");
+        }
+
+        if (new BigDecimal(amount).compareTo(new BigDecimal(discount)) == -1) {
+            throw new HxdsException("总金额不能小于优惠劵面额");
+        }
+        /*
+         * 3.修改实付金额
+         */
+        amount = NumberUtil.sub(amount, discount).toString();
+        UpdateBillPaymentForm form_3 = new UpdateBillPaymentForm();
+        form_3.setOrderId(orderId);
+        form_3.setRealPay(amount);
+        form_3.setVoucherFee(discount);
+        odrServiceApi.updateBillPayment(form_3);
+
+        /*
+         * 4.查询用户的OpenID字符串
+         */
+        SearchCustomerOpenIdForm form_4 = new SearchCustomerOpenIdForm();
+        form_4.setCustomerId(customerId);
+        r = cstServiceApi.searchCustomerOpenId(form_4);
+        String customerOpenId = MapUtil.getStr(r, "result");
+
+        /*
+         * 5.查询司机的OpenId字符串
+         */
+        SearchDriverOpenIdForm form_5 = new SearchDriverOpenIdForm();
+        form_5.setDriverId(driverId);
+        r = drServiceApi.searchDriverOpenId(form_5);
+        String driverOpenId = MapUtil.getStr(r, "result");
+
+        /*
+         * 6.TODO 创建支付订单,appid 啊还是商户号等都放在 myWXPayConfig 里面了
+         */
+
+        try{
+            WXPay wxPay = new WXPay(myWXPayConfig);
+            //提交支付账单的时候需要提交各种参数
+
+            HashMap param = new HashMap();
+            param.put("nonce_str", WXPayUtil.generateNonceStr());   //随机字符串
+            param.put("body","代驾费");
+            //代价订单uuid
+            param.put("out_trade_no",uuid);
+            //充值金额转换成分为单位，并且让BigDecimal取整数；
+            //amount == 1.00;
+            param.put("total_fee", NumberUtil.mul(amount, "100").setScale(0, RoundingMode.FLOOR).toString());
+            param.put("spbill_create_ip", "127.0.0.1");
+            //TODO 这里要修改成内网穿透的公网URL
+            param.put("notify_url", "http://demo.com");
+            param.put("trade_type", "JSAPI");
+            param.put("openid", customerOpenId);
+            param.put("attach", driverOpenId);
+            param.put("profit_sharing", "Y"); //支付需要分账
+
+            //创建支付订单
+            Map<String, String> result = wxPay.unifiedOrder(param);
+
+            //预支付交易会话标识ID
+            String prepayId = result.get("prepay_id");
+            if (prepayId != null) {
+                /*
+                 * 7.更新订单记录中的prepay_id字段值
+                 */
+                UpdateOrderPrepayIdForm form_6 = new UpdateOrderPrepayIdForm();
+                form_6.setOrderId(orderId);
+                form_6.setPrepayId(prepayId);
+                odrServiceApi.updateOrderPrepayId(form_6);
+
+                //准备生成数字签名用的数据
+                map.clear();
+                map.put("appId", myWXPayConfig.getAppID());
+                String timeStamp = new Date().getTime() + "";
+                map.put("timeStamp", timeStamp);
+                String nonceStr = WXPayUtil.generateNonceStr();
+                map.put("nonceStr", nonceStr);
+                map.put("package", "prepay_id=" + prepayId);
+                map.put("signType", "MD5");
+
+                //生成数据签名
+                String paySign = WXPayUtil.generateSignature(map, myWXPayConfig.getKey()); //生成数字签名
+
+                map.clear(); //清理HashMap，放入结果
+                map.put("package", "prepay_id=" + prepayId);
+                map.put("timeStamp", timeStamp);
+                map.put("nonceStr", nonceStr);
+                map.put("paySign", paySign);
+                //uuid用于付款成功后，移动端主动请求更新充值状态
+                map.put("uuid", uuid);
+                return map;
+            } else {
+                log.error("创建支付订单失败");
+                throw new HxdsException("创建支付订单失败");
+            }
+        } catch (Exception e) {
+            log.error("创建支付订单失败", e);
+            throw new HxdsException("创建支付订单失败");
+        }
+
     }
 }

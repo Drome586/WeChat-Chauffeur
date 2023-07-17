@@ -16,6 +16,9 @@ public interface OrderBillDao {
     //查询汇总出来的金额，显示到小程序
     public HashMap searchReviewDriverOrderBill(Map param);
 
+    //支付时查看是否使用过代金券等
+    public int updateOrderBillPayment(Map param);
+
 }
 
 

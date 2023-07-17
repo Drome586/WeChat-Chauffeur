@@ -14,4 +14,6 @@ public interface CustomerService {
     public HashMap searchCustomerInfoInOrder(long customerId);
 
     public HashMap searchCustomerBriefInfo(long customerId);
+
+    public String searchCustomerOpenId(long customerId);
 }

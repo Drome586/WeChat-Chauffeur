@@ -48,4 +48,9 @@
         FROM tb_customer
         WHERE id = #{customerId}
     </select>
+    <select id="searchCustomerOpenId" resultType="java.lang.String">
+        SELECT open_id AS openId
+        FROM tb_customer
+        WHERE id = #{customerId}
+    </select>
 </mapper>

@@ -48,4 +48,11 @@ public interface OrderService {
     public boolean validDriverOwnOrder(Map param);
 
     public HashMap searchSettlementNeedData(long orderId);
+
+    public HashMap searchOrderById(Map param);
+
+    public HashMap validCanPayOrder(Map param);
+
+    public int updateOrderPrepayId(Map param);
+
 }

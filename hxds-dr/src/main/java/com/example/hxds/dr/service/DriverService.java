@@ -26,4 +26,6 @@ public interface DriverService {
     public int updateDriverRealAuth(Map param);
 
     public HashMap searchDriverBriefInfo(long driverId);
+
+    public String searchDriverOpenId(long driverId);
 }

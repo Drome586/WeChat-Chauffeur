@@ -27,6 +27,17 @@
             incentive_fee = #{incentiveFee}
         WHERE order_id = #{orderId}
     </update>
+    <update id="updateOrderBillPayment">
+        UPDATE tb_order_bill
+        SET real_pay = #{realPay},
+        <if test="voucherFee==null">
+            voucher_fee="0.00"
+        </if>
+        <if test="voucherFee!=null">
+            voucher_fee = #{voucherFee}
+        </if>
+        WHERE order_id = #{orderId}
+    </update>
     <delete id="deleteUnAcceptOrderBill">
         DELETE
         FROM tb_order_bill

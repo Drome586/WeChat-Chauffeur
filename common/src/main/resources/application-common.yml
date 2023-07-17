@@ -17,8 +17,8 @@ tencent:
     key: 6V4BZ-LWTR5-2ZNIH-IQOMT-PTMUO-B2BY6
 
 wx:
-  app-id: wx75771b5d0fb899ad
-  app-secret: d707ddebb36bcf62f9239d2d25bc57e6
+  app-id: wx4cb8e9621950da45
+  app-secret: 86c4ecfa6be49444ab9b2e9c1490b5aa
   mch-id: 1526972031
   key: 5879a218f67f46a5aad75753a132ff3d
   cert-path: F:\apiclient_cert.p12

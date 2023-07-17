@@ -81,4 +81,24 @@ public class OrderController {
         boolean result = orderService.confirmArriveStartPlace(form);
         return R.ok().put("result",result);
     }
+
+    @PostMapping("/searchOrderById")
+    @Operation(summary = "根据Id查询订单信息")
+    @SaCheckLogin
+    public R searchOrderById(@RequestBody @Valid SearchOrderByIdForm form){
+        long customerId = StpUtil.getLoginIdAsLong();
+        form.setCustomerId(customerId);
+        HashMap map = orderService.searchOrderById(form);
+        return R.ok().put("result",map);
+    }
+
+    @PostMapping("/createWxPayment")
+    @Operation(summary = "创建支付订单")
+    @SaCheckLogin
+    public R createWxPayment(@RequestBody @Valid CreateWxPaymentForm form) {
+        Long customerId = StpUtil.getLoginIdAsLong();
+        form.setCustomerId(customerId);
+        HashMap map = orderService.createWxPayment(form.getOrderId(), form.getCustomerId(), form.getVoucherId());
+        return R.ok().put("result", map);
+    }
 }

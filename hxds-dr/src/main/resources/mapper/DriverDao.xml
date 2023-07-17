@@ -196,7 +196,13 @@
     <select id="searchDriverBriefInfo" resultType="java.util.HashMap">
         SELECT CAST(id AS CHAR) AS id,
                `name`,
-               tel
+               tel,
+               photo
+        FROM tb_driver
+        WHERE id = #{driverId}
+    </select>
+    <select id="searchDriverOpenId" resultType="java.lang.String">
+        SELECT open_id AS openId
         FROM tb_driver
         WHERE id = #{driverId}
     </select>

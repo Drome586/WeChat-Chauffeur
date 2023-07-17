@@ -16,4 +16,8 @@ public interface OrderService {
     public HashMap searchOrderForMoveById(SearchOrderForMoveByIdForm form);
 
     public boolean confirmArriveStartPlace(ConfirmArriveStartPlaceForm form);
+
+    public HashMap searchOrderById(SearchOrderByIdForm form);
+
+    public HashMap createWxPayment(long orderId,long customerId,Long voucherId);
 }
