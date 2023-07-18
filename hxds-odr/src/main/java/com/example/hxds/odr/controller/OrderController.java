@@ -301,4 +301,16 @@ public class OrderController {
         return R.ok().put("result", result);
     }
 
+    @PostMapping("/searchDriverOrderByPage")
+    @Operation(summary = "查询订单分页记录")
+    public R searchDriverOrderByPage(@RequestBody @Valid SearchDriverOrderByPageForm form) {
+        Map param = BeanUtil.beanToMap(form);
+        int page = form.getPage();
+        int length = form.getLength();
+        int start = (page - 1) * length;
+        param.put("start", start);
+        PageUtils pageUtils = orderService.searchDriverOrderByPage(param);
+        return R.ok().put("result", pageUtils);
+    }
+
 }

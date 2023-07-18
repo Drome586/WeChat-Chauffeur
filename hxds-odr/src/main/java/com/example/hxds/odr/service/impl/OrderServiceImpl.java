@@ -531,4 +531,19 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    @Override
+    public PageUtils searchDriverOrderByPage(Map param) {
+        long count = orderDao.searchDriverOrderCount(param);
+        ArrayList<HashMap> list = null;
+
+        if(count > 0){
+            list = orderDao.searchDriverOrderByPage(param);
+        }
+
+        int start = (Integer)param.get("start");
+        int length = (Integer)param.get("length");
+        PageUtils pageUtils = new PageUtils(list, count, start, length);
+        return pageUtils;
+    }
+
 }

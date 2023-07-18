@@ -76,6 +76,10 @@ public interface OrderDao {
 
     public long validDriverAndCustomerOwnOrder(Map param);
 
+    public ArrayList<HashMap> searchDriverOrderByPage(Map param);
+
+    public long searchDriverOrderCount(Map param);
+
 
 
 

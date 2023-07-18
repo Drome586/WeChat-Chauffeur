@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
 import com.example.hxds.bff.driver.controller.form.*;
 import com.example.hxds.bff.driver.service.OrderService;
+import com.example.hxds.common.util.PageUtils;
 import com.example.hxds.common.util.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -115,6 +116,16 @@ public class OrderController {
         form.setDriverId(driverId);
         HashMap map = orderService.searchReviewDriverOrderBill(form);
         return R.ok().put("result",map);
+    }
+
+    @PostMapping("/searchDriverOrderByPage")
+    @SaCheckLogin
+    @Operation(summary = "查询订单分页记录")
+    public R searchDriverOrderByPage(@RequestBody @Valid SearchDriverOrderByPageForm form) {
+        long driverId = StpUtil.getLoginIdAsLong();
+        form.setDriverId(driverId);
+        PageUtils pageUtils = orderService.searchDriverOrderByPage(form);
+        return R.ok().put("result", pageUtils);
     }
 
 

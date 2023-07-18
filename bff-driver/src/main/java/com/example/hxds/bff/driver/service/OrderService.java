@@ -1,6 +1,7 @@
 package com.example.hxds.bff.driver.service;
 
 import com.example.hxds.bff.driver.controller.form.*;
+import com.example.hxds.common.util.PageUtils;
 
 import java.util.HashMap;
 
@@ -23,5 +24,5 @@ public interface OrderService {
 
     public HashMap searchReviewDriverOrderBill(SearchReviewDriverOrderBillForm form);
 
-
+    public PageUtils searchDriverOrderByPage(SearchDriverOrderByPageForm form);
 }
