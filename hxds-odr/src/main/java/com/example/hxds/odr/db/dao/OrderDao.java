@@ -74,6 +74,10 @@ public interface OrderDao {
 
     public int updateOrderAboutPayment(Map param);
 
+    public long validDriverAndCustomerOwnOrder(Map param);
+
+
+
 
 }
 

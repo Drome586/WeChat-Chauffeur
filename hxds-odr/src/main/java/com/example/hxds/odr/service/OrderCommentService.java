@@ -1,15 +1,8 @@
-package com.example.hxds.odr.db.dao;
-
+package com.example.hxds.odr.service;
 
 import com.example.hxds.odr.db.pojo.OrderCommentEntity;
 
-import java.util.Map;
-
-public interface OrderCommentDao {
+public interface OrderCommentService {
 
     public int insert(OrderCommentEntity entity);
 }
-
-
-
-

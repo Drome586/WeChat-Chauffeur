@@ -343,4 +343,11 @@
         FROM tb_order
         WHERE id = #{orderId}
     </select>
+    <select id="validDriverAndCustomerOwnOrder" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM tb_order
+        WHERE id = #{orderId}
+          AND driver_id = #{driverId}
+          AND customer_id = #{customerId}
+    </select>
 </mapper>
