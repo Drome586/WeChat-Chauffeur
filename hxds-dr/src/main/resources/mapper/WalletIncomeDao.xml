@@ -4,4 +4,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.hxds.dr.db.dao.WalletIncomeDao">
 
+    <insert id="insert">
+        INSERT INTO tb_wallet_income
+        SET uuid=#{uuid},
+            driver_id=#{driverId},
+            amount=#{amount},
+            `type` =#{type},
+            `status`=#{status},
+            remark=#{remark}
+    </insert>
 </mapper>

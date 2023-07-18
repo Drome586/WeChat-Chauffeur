@@ -18,4 +18,16 @@
             driver_income = #{driverIncome},
             `status` = 1
     </insert>
+    <update id="updateProfitsharingStatus">
+        UPDATE tb_order_profitsharing
+        SET `status`=2
+        WHERE id = #{profitsharingId}
+    </update>
+    <select id="searchDriverIncome" resultType="java.util.HashMap">
+        SELECT p.id                        AS profitsharingId,
+               CAST(driver_income AS CHAR) AS driverIncome
+        FROM tb_order_profitsharing p
+        JOIN tb_order o ON p.order_id = o.id
+        WHERE o.uuid = #{uuid};
+    </select>
 </mapper>

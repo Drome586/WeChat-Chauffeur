@@ -1,9 +1,12 @@
 package com.example.hxds.odr.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
 import com.example.hxds.common.util.PageUtils;
 import com.example.hxds.common.util.R;
+import com.example.hxds.common.wxpay.MyWXPayConfig;
+import com.example.hxds.common.wxpay.WXPayUtil;
 import com.example.hxds.odr.controller.form.*;
 import com.example.hxds.odr.db.pojo.OrderBillEntity;
 import com.example.hxds.odr.db.pojo.OrderEntity;
@@ -19,7 +22,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +44,9 @@ public class OrderController {
 
     @Resource
     private OrderBillService orderBillService;
+
+    @Resource
+    private MyWXPayConfig myWXPayConfig;
 
     @PostMapping("/searchDriverTodayBusinessData")
     @Operation(summary = "查询司机当天营业数据")
@@ -221,6 +233,8 @@ public class OrderController {
         HashMap result = orderService.searchOrderById(map);
         return R.ok().put("result",result);
     }
+
+
     @PostMapping("/validCanPayOrder")
     @Operation(summary = "检查订单是否可以支付,并且返回uuid")
     public R validCanPayOrder(@RequestBody @Valid ValidCanPayOrderForm form) {
@@ -237,5 +251,54 @@ public class OrderController {
         return R.ok().put("rows", rows);
     }
 
+    @RequestMapping("/recieveMessage")
+    @Operation(summary = "接收代驾费订单消息")
+    public void recieveMessage(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        request.setCharacterEncoding("utf-8");
+        Reader reader = request.getReader();
+        BufferedReader buffer = new BufferedReader(reader);
+        String line = buffer.readLine();
+        StringBuffer temp = new StringBuffer();
+        while (line != null) {
+            temp.append(line);
+            line = buffer.readLine();
+        }
+        buffer.close();
+        reader.close();
+        String xml = temp.toString();
+        if (WXPayUtil.isSignatureValid(xml, myWXPayConfig.getKey())) {
+            Map<String, String> map = WXPayUtil.xmlToMap(xml);
+            String resultCode = map.get("result_code");
+            String returnCode = map.get("return_code");
+            if ("SUCCESS".equals(resultCode) && "SUCCESS".equals(returnCode)) {
+                response.setCharacterEncoding("utf-8");
+                response.setContentType("application/xml");
+                Writer writer = response.getWriter();
+                BufferedWriter bufferedWriter = new BufferedWriter(writer);
+                bufferedWriter.write("<xml><return_code><![CDATA[SUCCESS]]></return_code> <return_msg><![CDATA[OK]]></return_msg></xml>");
+                bufferedWriter.close();
+                writer.close();
+
+                String uuid = map.get("out_trade_no");
+                String payId = map.get("transaction_id");
+                String driverOpenId = map.get("attach");
+                String payTime = DateUtil.parse(map.get("time_end"), "yyyyMMddHHmmss").toString("yyyy-MM-dd HH:mm:ss");
+
+                //TODO 修改订单状态、执行分账、发放系统奖励
+
+                orderService.handlePayment(uuid,payId,driverOpenId,payTime);
+            }
+        } else {
+            response.sendError(500, "数字签名异常");
+        }
+    }
+
+    @PostMapping("/updateOrderAboutPayment")
+    @Operation(summary = "查询司机收款前是否关联某订单")
+    public R updateOrderAboutPayment(@RequestBody @Valid UpdateOrderAboutPaymentForm form) {
+        Map param = BeanUtil.beanToMap(form);
+        String result = orderService.updateOrderAboutPayment(param);
+        return R.ok().put("result", result);
+    }
 
 }

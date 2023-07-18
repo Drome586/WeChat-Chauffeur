@@ -8,6 +8,9 @@ import java.util.Map;
 
 public interface WalletIncomeDao {
 
+    //  平台发放奖励就是往司机账单里充钱
+    public int insert(WalletIncomeEntity entity);
+
 }
 
 

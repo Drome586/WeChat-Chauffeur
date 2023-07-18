@@ -101,4 +101,12 @@ public class OrderController {
         HashMap map = orderService.createWxPayment(form.getOrderId(), form.getCustomerId(), form.getVoucherId());
         return R.ok().put("result", map);
     }
+
+    @PostMapping("/updateOrderAboutPayment")
+    @Operation(summary = "查询司机是否关联某订单")
+    @SaCheckLogin
+    public R updateOrderAboutPayment(@RequestBody @Valid UpdateOrderAboutPaymentForm form) {
+        String result = orderService.updateOrderAboutPayment(form);
+        return R.ok().put("result", result);
+    }
 }

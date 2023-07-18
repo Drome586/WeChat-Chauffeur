@@ -313,10 +313,11 @@ public class OrderServiceImpl implements OrderService {
             param.put("out_trade_no",uuid);
             //充值金额转换成分为单位，并且让BigDecimal取整数；
             //amount == 1.00;
-            param.put("total_fee", NumberUtil.mul(amount, "100").setScale(0, RoundingMode.FLOOR).toString());
+            //param.put("total_fee", NumberUtil.mul(amount, "100").setScale(0, RoundingMode.FLOOR).toString());
+            param.put("total_fee","4");
             param.put("spbill_create_ip", "127.0.0.1");
             //TODO 这里要修改成内网穿透的公网URL
-            param.put("notify_url", "http://demo.com");
+            param.put("notify_url", "http://s2.s100.vip:16399/hxds-odr/order/recieveMessage");
             param.put("trade_type", "JSAPI");
             param.put("openid", customerOpenId);
             param.put("attach", driverOpenId);
@@ -324,7 +325,7 @@ public class OrderServiceImpl implements OrderService {
 
             //创建支付订单
             Map<String, String> result = wxPay.unifiedOrder(param);
-
+            System.out.println(result);
             //预支付交易会话标识ID
             String prepayId = result.get("prepay_id");
             if (prepayId != null) {
@@ -366,5 +367,14 @@ public class OrderServiceImpl implements OrderService {
             throw new HxdsException("创建支付订单失败");
         }
 
+    }
+
+    @Override
+    @Transactional
+    @LcnTransaction
+    public String updateOrderAboutPayment(UpdateOrderAboutPaymentForm form) {
+        R r = odrServiceApi.updateOrderAboutPayment(form);
+        String result = MapUtil.getStr(r, "result");
+        return result;
     }
 }

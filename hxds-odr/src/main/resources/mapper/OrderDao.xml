@@ -61,6 +61,25 @@
         SET prepay_id = #{prepayId}
         WHERE id = #{orderId}
     </update>
+    <update id="updateOrderPayIdAndStatus">
+        UPDATE tb_order
+        SET pay_id   = #{payId},
+            `status` = 7,
+            pay_time = #{payTime}
+        WHERE uuid = #{uuid}
+    </update>
+    <update id="finishOrder">
+        UPDATE tb_order
+        SET `status` = 8
+        WHERE uuid = #{uuid}
+    </update>
+    <update id="updateOrderAboutPayment">
+        UPDATE tb_order
+        SET status   = 7,
+            pay_id   = #{payId},
+            pay_time = #{payTime}
+        WHERE id = #{orderId}
+    </update>
 
     <delete id="deleteUnAcceptOrder">
         DELETE FROM tb_order
@@ -305,5 +324,23 @@
         WHERE id = #{orderId}
           AND customer_id = #{customerId}
           AND `status` = 6
+    </select>
+    <select id="searchOrderIdAndStatus" resultType="java.util.HashMap">
+        SELECT CAST(id AS CHAR) AS id,
+               `status`
+        FROM tb_order
+        WHERE uuid = #{uuid}
+    </select>
+    <select id="searchDriverIdAndIncentiveFee" resultType="java.util.HashMap">
+        SELECT CAST(driver_id AS CHAR)     AS driverId,
+               CAST(incentive_fee AS CHAR) AS incentiveFee
+        FROM tb_order
+        WHERE uuid = #{uuid}
+    </select>
+    <select id="searchUuidAndStatus" resultType="java.util.HashMap">
+        SELECT uuid,
+               `status`
+        FROM tb_order
+        WHERE id = #{orderId}
     </select>
 </mapper>
