@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.PageUtil;
 import cn.hutool.json.JSON;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -543,6 +544,23 @@ public class OrderServiceImpl implements OrderService {
         int start = (Integer)param.get("start");
         int length = (Integer)param.get("length");
         PageUtils pageUtils = new PageUtils(list, count, start, length);
+        return pageUtils;
+    }
+
+    @Override
+    public PageUtils searchCustomerOrderByPage(Map param) {
+        long count = orderDao.searchCustomerOrderCount(param);
+        ArrayList<HashMap> list = null;
+        if(count > 0){
+            list = orderDao.searchCustomerOrderByPage(param);
+        }else{
+            list = new ArrayList<>();
+        }
+        int start = MapUtil.getInt(param,"start");
+        int length = MapUtil.getInt(param,"length");
+
+        PageUtils pageUtils = new PageUtils(list, count, start, length);
+
         return pageUtils;
     }
 

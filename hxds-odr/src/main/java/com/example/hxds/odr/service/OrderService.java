@@ -61,5 +61,7 @@ public interface OrderService {
 
     public PageUtils searchDriverOrderByPage(Map param);
 
+    public PageUtils searchCustomerOrderByPage(Map param);
+
 
 }

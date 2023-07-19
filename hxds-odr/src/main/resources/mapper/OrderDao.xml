@@ -382,4 +382,36 @@
             AND `status`=#{status}
         </if>
     </select>
+    <select id="searchCustomerOrderByPage" resultType="java.util.HashMap">
+        SELECT CAST(o.id AS CHAR) AS id,
+        DATE_FORMAT(o.accept_time, '%Y-%m-%d %H:%i:%s') AS acceptTime,
+        DATE_FORMAT(o.accept_time, '%Y年%m月') AS `month`,
+        CAST(o.real_fee AS CHAR) AS realFee,
+        o.`status`,
+        o.start_place AS startPlace,
+        o.end_place AS endPlace,
+        IFNULL(c.rate, -1) AS rate
+        FROM tb_order o
+        LEFT JOIN tb_order_comment c ON o.id = c.order_id
+        WHERE 1=1
+        <if test="customerId!=null">
+            AND o.customer_id = #{customerId}
+        </if>
+        <if test="status!=null">
+            AND o.`status` = #{status}
+        </if>
+        ORDER BY o.id DESC
+        LIMIT #{start}, #{length}
+    </select>
+    <select id="searchCustomerOrderCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM tb_order
+        WHERE 1=1
+        <if test="customerId!=null">
+            AND customer_id = #{customerId}
+        </if>
+        <if test="status!=null">
+            AND `status` = #{status}
+        </if>
+    </select>
 </mapper>

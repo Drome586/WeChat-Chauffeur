@@ -1,6 +1,7 @@
 package com.example.hxds.bff.customer.service;
 
 import com.example.hxds.bff.customer.controller.form.*;
+import com.example.hxds.common.util.PageUtils;
 
 import java.util.HashMap;
 
@@ -22,4 +23,6 @@ public interface OrderService {
     public HashMap createWxPayment(long orderId,long customerId,Long voucherId);
 
     public String updateOrderAboutPayment(UpdateOrderAboutPaymentForm form);
+
+    public PageUtils searchCustomerOrderByPage(SearchCustomerOrderByPageForm form);
 }

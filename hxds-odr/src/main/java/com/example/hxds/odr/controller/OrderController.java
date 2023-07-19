@@ -313,4 +313,18 @@ public class OrderController {
         return R.ok().put("result", pageUtils);
     }
 
+
+    @PostMapping("/searchCustomerOrderByPage")
+    @Operation(summary = "查询订单分页记录")
+    public R searchCustomerOrderByPage(@RequestBody @Valid SearchCustomerOrderByPageForm form){
+        Map param = BeanUtil.beanToMap(form);
+        int page= form.getPage();
+        int length = form.getLength();
+        int start=(page-1)*length;
+        param.put("start",start);
+        PageUtils pageUtils = orderService.searchCustomerOrderByPage(param);
+        return R.ok().put("result",pageUtils);
+    }
+
+
 }

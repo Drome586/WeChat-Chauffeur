@@ -45,5 +45,8 @@ public interface OdrServiceApi {
     @PostMapping("/comment/insertComment")
     public R insertComment(InsertCommentForm form);
 
+
+    @PostMapping("/order/searchCustomerOrderByPage")
+    public R searchCustomerOrderByPage(SearchCustomerOrderByPageForm form);
 }
 
