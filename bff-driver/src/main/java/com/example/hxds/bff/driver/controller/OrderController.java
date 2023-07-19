@@ -128,5 +128,14 @@ public class OrderController {
         return R.ok().put("result", pageUtils);
     }
 
+    @PostMapping("/searchOrderById")
+    @SaCheckLogin
+    @Operation(summary = "根据订单ID查询订单记录")
+    public R searchOrderById(@RequestBody @Valid SearchOrderByIdForm form) {
+        long driverId = StpUtil.getLoginIdAsLong();
+        form.setDriverId(driverId);
+        HashMap map = orderService.searchOrderById(form);
+        return R.ok().put("result", map);
+    }
 
 }

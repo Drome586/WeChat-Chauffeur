@@ -15,4 +15,22 @@
             instance_id = #{instanceId},
             create_time = #{createTime}
     </insert>
+    <select id="searchCommentByOrderId" resultType="java.util.HashMap">
+        SELECT CAST(id AS CHAR) AS id,
+        CAST(driver_id AS CHAR) AS driverId,
+        CAST(customer_id AS CHAR) AS customerId,
+        rate,
+        remark,
+        `status`,
+        instance_id AS instanceId,
+        DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') AS createTime
+        FROM tb_order_comment
+        WHERE order_id = #{orderId}
+        <if test="driverId!=null">
+            AND driver_id = #{driverId}
+        </if>
+        <if test="customerId!=null">
+            AND customer_id = #{customerId}
+        </if>
+    </select>
 </mapper>

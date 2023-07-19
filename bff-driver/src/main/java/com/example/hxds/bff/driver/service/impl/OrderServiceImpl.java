@@ -264,5 +264,42 @@ public class OrderServiceImpl implements OrderService {
 
     }
 
+    @Override
+    public HashMap searchOrderById(SearchOrderByIdForm form) {
+        //查询订单信息
+
+        R r = odrServiceApi.searchOrderById(form);
+        HashMap orderMap = (HashMap) r.get("result");
+
+        //查询代驾客户信息
+        long customerId = MapUtil.getLong(orderMap, "customerId");
+        SearchCustomerInfoInOrderForm form_1 = new SearchCustomerInfoInOrderForm();
+        form_1.setCustomerId(customerId);
+        r = cstServiceApi.searchCustomerInfoInOrder(form_1);
+        HashMap cstMap = (HashMap) r.get("result");
+
+        //查询评价信息
+        int status = MapUtil.getInt(orderMap, "status");
+        HashMap cmtMap = new HashMap();
+        if (status >= 7) {
+            SearchCommentByOrderIdForm form_2 = new SearchCommentByOrderIdForm();
+            form_2.setOrderId(form.getOrderId());
+            form_2.setDriverId(form.getDriverId());
+            r = odrServiceApi.searchCommentByOrderId(form_2);
+
+            if (r.containsKey("result")) {
+                cmtMap = (HashMap) r.get("result");
+            } else {
+                cmtMap.put("rate", 5);
+            }
+        }
+
+        HashMap map = new HashMap();
+        map.putAll(orderMap);
+        map.putAll(cstMap);
+        map.put("comment",cmtMap);
+        return map;
+    }
+
 
 }

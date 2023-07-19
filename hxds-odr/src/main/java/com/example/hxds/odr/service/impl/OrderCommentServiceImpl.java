@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -78,5 +79,11 @@ public class OrderCommentServiceImpl implements OrderCommentService {
             throw new HxdsException("保存订单评价失败");
         }
         return rows;
+    }
+
+    @Override
+    public HashMap searchCommentByOrderId(Map param) {
+        HashMap map = orderCommentDao.searchCommentByOrderId(param);
+        return map;
     }
 }
