@@ -22,6 +22,16 @@ public class OrderCommentEntity implements Serializable {
     private Long orderId;
 
     /**
+     * 审批人ID
+     */
+    private Integer userId;
+
+    /**
+     * 审批人姓名
+     */
+    private String userName;
+
+    /**
      * 司机ID
      */
     private Long driverId;
