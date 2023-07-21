@@ -5,6 +5,8 @@ import cn.dev33.satoken.annotation.SaMode;
 import cn.dev33.satoken.stp.StpUtil;
 import com.example.hxds.common.util.PageUtils;
 import com.example.hxds.common.util.R;
+import com.example.hxds.mis.api.controller.form.AcceptCommentAppealForm;
+import com.example.hxds.mis.api.controller.form.HandleCommentAppealForm;
 import com.example.hxds.mis.api.controller.form.SearchCommentByPageForm;
 import com.example.hxds.mis.api.service.OrderCommentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,5 +35,23 @@ public class OrderCommentController {
         form.setUserId(userId);
         PageUtils pageUtils = orderCommentService.searchCommentByPage(form);
         return R.ok().put("result", pageUtils);
+    }
+
+    @PostMapping("/acceptCommentAppeal")
+    @Operation(summary = "受理评价申诉")
+    public R acceptCommentAppeal(@RequestBody @Valid AcceptCommentAppealForm form) {
+        int userId = StpUtil.getLoginIdAsInt();
+        form.setUserId(userId);
+        orderCommentService.acceptCommentAppeal(form);
+        return R.ok();
+    }
+
+    @PostMapping("/handleCommentAppeal")
+    @Operation(summary = "处理评价申诉")
+    public R handleCommentAppeal(@RequestBody @Valid HandleCommentAppealForm form) {
+        int userId = StpUtil.getLoginIdAsInt();
+        form.setUserId(userId);
+        orderCommentService.handleCommentAppeal(form);
+        return R.ok();
     }
 }
