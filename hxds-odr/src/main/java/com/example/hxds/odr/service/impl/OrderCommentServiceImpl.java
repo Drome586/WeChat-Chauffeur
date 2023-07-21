@@ -1,7 +1,10 @@
 package com.example.hxds.odr.service.impl;
 
 import cn.hutool.core.codec.Base64;
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.PageUtil;
 import com.example.hxds.common.exception.HxdsException;
+import com.example.hxds.common.util.PageUtils;
 import com.example.hxds.odr.db.dao.OrderCommentDao;
 import com.example.hxds.odr.db.dao.OrderDao;
 import com.example.hxds.odr.db.pojo.OrderCommentEntity;
@@ -18,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -85,5 +89,24 @@ public class OrderCommentServiceImpl implements OrderCommentService {
     public HashMap searchCommentByOrderId(Map param) {
         HashMap map = orderCommentDao.searchCommentByOrderId(param);
         return map;
+    }
+
+    @Override
+    public PageUtils searchCommentByPage(Map param) {
+        long count = orderCommentDao.searchCommentCount(param);
+        ArrayList<HashMap> list = null;
+        if(count >0){
+            list = orderCommentDao.searchCommentByPage(param);
+            list.forEach(one->{
+                Integer temp = MapUtil.getInt(one, "handler");
+                one.replace("handler",temp==1);
+            });
+        }else{
+            list = new ArrayList<>();
+        }
+        int start = MapUtil.getInt(param,"start");
+        int length = MapUtil.getInt(param,"length");
+        PageUtils pageUtils = new PageUtils(list, count, start, length);
+        return pageUtils;
     }
 }
