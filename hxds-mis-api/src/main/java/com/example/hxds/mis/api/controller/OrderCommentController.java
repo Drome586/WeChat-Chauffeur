@@ -7,6 +7,7 @@ import com.example.hxds.common.util.PageUtils;
 import com.example.hxds.common.util.R;
 import com.example.hxds.mis.api.controller.form.AcceptCommentAppealForm;
 import com.example.hxds.mis.api.controller.form.HandleCommentAppealForm;
+import com.example.hxds.mis.api.controller.form.SearchAppealContentForm;
 import com.example.hxds.mis.api.controller.form.SearchCommentByPageForm;
 import com.example.hxds.mis.api.service.OrderCommentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/comment")
@@ -53,5 +55,13 @@ public class OrderCommentController {
         form.setUserId(userId);
         orderCommentService.handleCommentAppeal(form);
         return R.ok();
+    }
+
+    @PostMapping("/searchAppealContent")
+    @SaCheckPermission(value = {"ROOT", "COMMENT:SELECT"}, mode = SaMode.OR)
+    @Operation(summary = "查询审批工作流内容")
+    public R searchAppealContent(@RequestBody @Valid SearchAppealContentForm form) {
+        HashMap map = orderCommentService.searchAppealContent(form);
+        return R.ok().put("result", map);
     }
 }
