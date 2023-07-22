@@ -6,15 +6,15 @@
     <insert id="insert" parameterType="com.example.hxds.vhr.db.pojo.VoucherEntity">
         INSERT INTO tb_voucher
         SET uuid = #{uuid},
-        name = #{name},
+        `name` = #{name},
         remark = #{remark},
         tag = #{tag},
         total_quota = #{totalQuota},
-        take_count = #{takeCount},
-        used_count = #{usedCount},
+        take_count = 0,
+        used_count = 0,
         discount = #{discount},
         with_amount = #{withAmount},
-        type = #{type},
+        `type` = #{type},
         limit_quota = #{limitQuota},
         <if test="timeType!=null">
             time_type = #{timeType},
@@ -30,6 +30,11 @@
         </if>
         `status` = #{status}
     </insert>
+    <update id="updateVoucherStatus">
+        UPDATE tb_voucher
+        SET `status`=#{status}
+        WHERE id = #{id}
+    </update>
     <select id="searchIdByUUID" parameterType="list" resultType="String">
         SELECT CAST(id AS CHAR) AS id
         FROM tb_voucher
@@ -144,6 +149,26 @@
                 AND time_type IS NULL
             </when>
         </choose>
+    </select>
+    <select id="searchVoucherById" resultType="java.util.HashMap">
+        SELECT uuid,
+               `name`,
+               remark,
+               tag,
+               total_quota                         AS totalQuota,
+               take_count                          AS takeCount,
+               used_count                          AS usedCount,
+               discount,
+               with_amount                         AS withAmount,
+               `type`,
+               limit_quota                         AS limitQuota,
+               time_type                           AS timeType,
+               days,
+               DATE_FORMAT(start_time, '%Y-%m-%d') AS startTime,
+               DATE_FORMAT(end_time, '%Y-%m-%d')   AS endTime,
+               `status`
+        FROM tb_voucher
+        WHERE id = #{id}
     </select>
 
 </mapper>
