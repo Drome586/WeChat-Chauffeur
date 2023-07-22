@@ -30,4 +30,6 @@ public class VoucherCustomerController {
         String discount = voucherCustomerService.useVoucher(param);
         return R.ok().put("result", discount);
     }
+
+
 }

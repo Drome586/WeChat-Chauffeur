@@ -38,5 +38,112 @@
             #{one}
         </foreach>
     </select>
+    <select id="searchVoucherByPage" resultType="java.util.HashMap">
+        SELECT CAST(id AS CHAR) AS id,
+        uuid,
+        `name`,
+        remark,
+        tag,
+        total_quota AS totalQuota,
+        take_count AS takeCount,
+        used_count AS usedCount,
+        CAST(discount AS CHAR) AS discount,
+        CAST(with_amount AS CHAR) AS withAmount,
+        type,
+        limit_quota AS limitQuota,
+        `status`,
+        time_type AS timeType,
+        days,
+        DATE_FORMAT(start_time, '%Y-%m-%d') AS startTime,
+        DATE_FORMAT(end_time, '%Y-%m-%d') AS endTime,
+        DATE_FORMAT(create_time, '%Y-%m-%d') AS createTime
+        FROM tb_voucher
+        WHERE 1 = 1
+        <if test="name!=null">
+            AND `name` LIKE '%${name}%'
+        </if>
+        <if test="tag!=null">
+            AND tag LIKE '%${tag}%'
+        </if>
+        <choose>
+            <when test='totalQuota=="无限量"'>
+                AND total_quota = 0
+            </when>
+            <when test='totalQuota=="有限量"'>
+                AND total_quota > 0
+            </when>
+        </choose>
+        <if test="type!=null">
+            AND type = #{type}
+        </if>
+        <choose>
+            <when test='limitQuota=="有限制"'>
+                AND limit_quota = 1
+            </when>
+            <when test='limitQuota=="无限制"'>
+                AND limit_quota = 0
+            </when>
+        </choose>
+        <if test="status!=null">
+            AND `status` = #{status}
+        </if>
+        <choose>
+            <when test='timeType=="有效天数"'>
+                AND time_type = 1
+            </when>
+            <when test='timeType=="有效日期"'>
+                AND time_type = 2
+            </when>
+            <when test='timeType=="无期限"'>
+                AND time_type IS NULL
+            </when>
+        </choose>
+        ORDER BY id DESC
+        LIMIT #{start}, #{length}
+    </select>
+    <select id="searchVoucherCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM tb_voucher
+        WHERE 1 = 1
+        <if test="name!=null">
+            AND `name` LIKE '%${name}%'
+        </if>
+        <if test="tag!=null">
+            AND tag LIKE '%${tag}%'
+        </if>
+        <choose>
+            <when test='totalQuota=="无限量"'>
+                AND total_quota = 0
+            </when>
+            <when test='totalQuota=="有限量"'>
+                AND total_quota > 0
+            </when>
+        </choose>
+        <if test="type!=null">
+            AND type = #{type}
+        </if>
+        <choose>
+            <when test='limitQuota=="有限制"'>
+                AND limit_quota = 1
+            </when>
+            <when test='limitQuota=="无限制"'>
+                AND limit_quota = 0
+            </when>
+        </choose>
+        <if test="status!=null">
+            AND `status` = #{status}
+        </if>
+        <choose>
+            <when test='timeType=="有效天数"'>
+                AND time_type = 1
+            </when>
+            <when test='timeType=="有效日期"'>
+                AND time_type = 2
+            </when>
+            <when test='timeType=="无期限"'>
+                AND time_type IS NULL
+            </when>
+        </choose>
+    </select>
 
 </mapper>

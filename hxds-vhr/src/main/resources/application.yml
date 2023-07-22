@@ -16,6 +16,17 @@ spring:
     include: common
   application:
     name: hxds-vhr
+  redis:
+    database: 4
+    host: localhost
+    port: 6379
+    password: abc123456
+    jedis:
+      pool:
+        max-active: 1000
+        max-wait: -1ms
+        max-idle: 16
+        min-idle: 8
   cloud:
     inetutils:
       #子系统注册到Nacos上的IP地址
