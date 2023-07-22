@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaMode;
 import com.example.hxds.common.util.PageUtils;
 import com.example.hxds.common.util.R;
+import com.example.hxds.mis.api.controller.form.DeleteVoucherByIdsForm;
 import com.example.hxds.mis.api.controller.form.InsertVoucherForm;
 import com.example.hxds.mis.api.controller.form.SearchVoucherByPageForm;
 import com.example.hxds.mis.api.controller.form.UpdateVoucherStatusForm;
@@ -47,6 +48,14 @@ public class VoucherController {
     @Operation(summary = "更新代金券状态")
     public R updateVoucherStatus(@RequestBody @Valid UpdateVoucherStatusForm form) {
         int rows = voucherService.updateVoucherStatus(form);
+        return R.ok().put("rows", rows);
+    }
+
+    @PostMapping("/deleteVoucherByIds")
+    @SaCheckPermission(value = {"ROOT", "VOUCHER:DELETE"}, mode = SaMode.OR)
+    @Operation(summary = "删除代金券")
+    public R deleteVoucherByIds(@RequestBody @Valid DeleteVoucherByIdsForm form) {
+        int rows = voucherService.deleteVoucherByIds(form);
         return R.ok().put("rows", rows);
     }
 

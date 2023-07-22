@@ -6,6 +6,7 @@ import com.alibaba.nacos.common.utils.MapUtils;
 import com.codingapi.txlcn.tc.annotation.LcnTransaction;
 import com.example.hxds.common.util.PageUtils;
 import com.example.hxds.common.util.R;
+import com.example.hxds.mis.api.controller.form.DeleteVoucherByIdsForm;
 import com.example.hxds.mis.api.controller.form.InsertVoucherForm;
 import com.example.hxds.mis.api.controller.form.SearchVoucherByPageForm;
 import com.example.hxds.mis.api.controller.form.UpdateVoucherStatusForm;
@@ -47,6 +48,15 @@ public class VoucherServiceImpl implements VoucherService {
     @Transactional
     public int updateVoucherStatus(UpdateVoucherStatusForm form) {
         R r = vhrServiceApi.updateVoucherStatus(form);
+        int rows = MapUtil.getInt(r, "rows");
+        return rows;
+    }
+
+    @Override
+    @LcnTransaction
+    @Transactional
+    public int deleteVoucherByIds(DeleteVoucherByIdsForm form) {
+        R r = vhrServiceApi.deleteVoucherByIds(form);
         int rows = MapUtil.getInt(r, "rows");
         return rows;
     }

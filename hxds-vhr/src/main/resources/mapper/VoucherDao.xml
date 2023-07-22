@@ -35,6 +35,13 @@
         SET `status`=#{status}
         WHERE id = #{id}
     </update>
+    <delete id="deleteVoucherByIds">
+        DELETE FROM tb_voucher
+        WHERE id IN
+        <foreach collection="array" open="(" separator="," close=")" item="one">
+            #{one}
+        </foreach>
+    </delete>
     <select id="searchIdByUUID" parameterType="list" resultType="String">
         SELECT CAST(id AS CHAR) AS id
         FROM tb_voucher
@@ -169,6 +176,17 @@
                `status`
         FROM tb_voucher
         WHERE id = #{id}
+    </select>
+    <select id="searchVoucherTakeCount" resultType="java.util.HashMap">
+        SELECT id,
+        uuid,
+        total_quota AS totalQuota,
+        take_count AS takeCount
+        FROM tb_voucher
+        WHERE id IN
+        <foreach collection="array" open="(" separator="," close=")" item="one">
+            #{one}
+        </foreach>
     </select>
 
 </mapper>

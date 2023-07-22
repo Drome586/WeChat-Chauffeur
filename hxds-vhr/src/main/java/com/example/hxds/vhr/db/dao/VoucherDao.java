@@ -20,6 +20,10 @@ public interface VoucherDao {
 
     public int updateVoucherStatus(Map param);
 
+    public ArrayList<HashMap> searchVoucherTakeCount(Long[] ids);
+
+    public int deleteVoucherByIds(Long[] ids);
+
 
 }
 

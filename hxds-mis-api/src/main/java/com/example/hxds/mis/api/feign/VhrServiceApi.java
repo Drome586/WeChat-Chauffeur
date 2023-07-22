@@ -1,6 +1,7 @@
 package com.example.hxds.mis.api.feign;
 
 import com.example.hxds.common.util.R;
+import com.example.hxds.mis.api.controller.form.DeleteVoucherByIdsForm;
 import com.example.hxds.mis.api.controller.form.InsertVoucherForm;
 import com.example.hxds.mis.api.controller.form.SearchVoucherByPageForm;
 import com.example.hxds.mis.api.controller.form.UpdateVoucherStatusForm;
@@ -17,5 +18,8 @@ public interface VhrServiceApi {
 
     @PostMapping("/voucher/updateVoucherStatus")
     public R updateVoucherStatus(UpdateVoucherStatusForm form);
+
+    @PostMapping("/voucher/deleteVoucherByIds")
+    public R deleteVoucherByIds(DeleteVoucherByIdsForm form);
 }
 

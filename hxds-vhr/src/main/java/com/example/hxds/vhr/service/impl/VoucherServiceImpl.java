@@ -81,6 +81,52 @@ public class VoucherServiceImpl implements VoucherService {
         return rows;
     }
 
+    /*
+    做批量删除，多选框，所以传入的是个数组
+     */
+    @Override
+    @Transactional
+    @LcnTransaction
+    public int deleteVoucherByIds(Long[] ids) {
+        ArrayList<HashMap> list = voucherDao.searchVoucherTakeCount(ids);
+        ArrayList<Long> temp = new ArrayList<>();
+
+        list.forEach(one->{
+            long id = MapUtil.getLong(one,"id");
+            String uuid = MapUtil.getStr(one, "uuid");
+            Long totalQuota = MapUtil.getLong(one, "totalQuota");
+            Long takeCount = MapUtil.getLong(one, "takeCount");
+            if(takeCount == 0){
+                //查询redis中的缓存记录
+                if(redisTemplate.hasKey("voucher_"+uuid)){
+                    long num = Long.parseLong(redisTemplate.opsForValue().get("voucher_"+uuid).toString());
+                    //没有人领取代金券
+                    if(num == totalQuota){
+                        temp.add(id);
+                        //删除redis缓存
+                        redisTemplate.delete("voucher_"+uuid);
+                        redisTemplate.delete("voucher_info_"+uuid);
+
+                    }else{
+                        log.debug("主键是"+id + "的代金券不能被删除");
+                    }
+
+                }else{
+                    temp.add(id);
+                }
+            }else{
+                //该记录不能被删除
+                log.debug("主键是"+id + "的代金券不能被删除");
+            }
+        });
+        if(temp.size() > 0){
+            ids = temp.toArray(new Long[temp.size()]);
+            int rows = voucherDao.deleteVoucherByIds(ids);
+            return rows;
+        }
+        return 0;
+    }
+
     /**
      * 该私有方法的作用是将将上线的 “代金券信息” 和 ”代金券数量“ 缓存到redis中，并且设置过期时间
      * @param entity
