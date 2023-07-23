@@ -24,6 +24,24 @@ public interface VoucherDao {
 
     public int deleteVoucherByIds(Long[] ids);
 
+    /*
+    查询未领取的代金券
+     */
+    public ArrayList<HashMap> searchUnTakeVoucherByPage(Map param);
+    public long searchUnTakeVoucherCount(Map param);
+
+    /*
+    查询未使用代金券总数量
+     */
+    public ArrayList<HashMap> searchUnUseVoucherByPage(Map param);
+    public long searchUnUseVoucherCount(Map param);
+
+    /*
+    查询已使用代金券总数量
+     */
+    public ArrayList<HashMap> searchUsedVoucherByPage(Map param);
+    public long searchUsedVoucherCount(Map param);
+
 
 }
 
