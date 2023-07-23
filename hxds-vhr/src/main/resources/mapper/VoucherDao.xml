@@ -35,6 +35,11 @@
         SET `status`=#{status}
         WHERE id = #{id}
     </update>
+    <update id="takeVoucher">
+        UPDATE tb_voucher
+        SET take_count = take_count + 1
+        WHERE id = #{id}
+    </update>
     <delete id="deleteVoucherByIds">
         DELETE FROM tb_voucher
         WHERE id IN

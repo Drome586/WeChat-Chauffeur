@@ -27,6 +27,12 @@
           AND ((CURRENT_DATE BETWEEN vc.start_time AND vc.end_time)
             OR (vc.start_time IS NULL AND vc.end_time IS NULL));
     </select>
+    <select id="searchTakeVoucherNum" resultType="java.lang.Long">
+        SELECT COUNT(id)
+        FROM tb_voucher_customer
+        WHERE voucher_id = #{voucherId}
+          AND customer_id = #{customerId}
+    </select>
     <update id="bindVoucher" parameterType="Map">
         UPDATE tb_voucher_customer
         SET order_id = #{orderId},

@@ -42,6 +42,8 @@ public interface VoucherDao {
     public ArrayList<HashMap> searchUsedVoucherByPage(Map param);
     public long searchUsedVoucherCount(Map param);
 
+    public int takeVoucher(long id);
+
 
 }
 

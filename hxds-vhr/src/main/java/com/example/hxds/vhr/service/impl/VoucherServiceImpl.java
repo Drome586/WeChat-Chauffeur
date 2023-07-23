@@ -1,16 +1,24 @@
 package com.example.hxds.vhr.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.date.DateField;
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.PageUtil;
 import com.codingapi.txlcn.tc.annotation.LcnTransaction;
+import com.ctc.wstx.util.DataUtil;
 import com.example.hxds.common.util.PageUtils;
 import com.example.hxds.vhr.db.dao.VoucherCustomerDao;
 import com.example.hxds.vhr.db.dao.VoucherDao;
+import com.example.hxds.vhr.db.pojo.VoucherCustomerEntity;
 import com.example.hxds.vhr.db.pojo.VoucherEntity;
 import com.example.hxds.vhr.service.VoucherService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -171,6 +179,113 @@ public class VoucherServiceImpl implements VoucherService {
         int length = MapUtil.getInt(param, "length");
         PageUtils pageUtils = new PageUtils(list, count, start, length);
         return pageUtils;
+    }
+
+    @Override
+    public long searchUnUseVoucherCount(Map param) {
+        long count = voucherDao.searchUnUseVoucherCount(param);
+        return count;
+    }
+
+    @Override
+    @Transactional
+    @LcnTransaction
+    public boolean takeVoucher(Map param) {
+        String uuid = MapUtil.getStr(param, "uuid");
+        long id = MapUtil.getLong(param, "id");
+        long customerId = MapUtil.getLong(param, "customerId");
+        if (!(redisTemplate.hasKey("voucher_" + uuid) && redisTemplate.hasKey("voucher_info_" + uuid))) {
+            return false;
+        }
+        //开启redis事务，领取代金券
+        /**
+         * 1.先判断缓存
+         * 2.判断代金券是否仅限一人一张，是否已经领取过了
+         * 3.判断有效期限
+         * 4.判断代金券是否为无限制（==0）
+         * 5.有总数量的限制，不能超售
+         */
+        boolean result=(Boolean)redisTemplate.execute(new SessionCallback() {
+            @Override
+            public Object execute(RedisOperations operations) throws DataAccessException {
+                operations.watch("voucher_" + uuid);
+                Map entries = operations.opsForHash().entries("voucher_info_" + uuid); //代金券信息
+                int totalQuota = MapUtil.getInt(entries, "totalQuota"); //代金券总数
+                short limitQuota = Short.parseShort(entries.get("limitQuota").toString()); //限制领取
+
+                //代金券有限制，判断是否领取过了
+                if(limitQuota>0){
+                    HashMap condition = new HashMap() {{
+                        put("customerId", customerId);
+                        put("voucherId", id);
+                    }};
+                    //查询该乘客已经领取的代金券的数量
+                    long count = voucherCustomerDao.searchTakeVoucherNum(condition);
+                    if(count>=limitQuota){
+                        return false;
+                    }
+                }
+                //领取代金券后的有效期
+                String startTime = null;
+                String endTime = null;
+                if(entries.get("timeType")!=null){
+                    byte timeType = Byte.parseByte(entries.get("timeType").toString()); //有效期类型
+                    if(timeType==1){
+                        int days = MapUtil.getInt(entries, "days");
+                        startTime=DateUtil.today();
+                        endTime=new DateTime().offset(DateField.DAY_OF_MONTH,days).toDateStr();
+                    }
+                    else if(timeType==2){
+                        startTime = MapUtil.getStr(entries, "startTime");
+                        endTime = MapUtil.getStr(entries, "endTime");
+                    }
+                }
+                VoucherCustomerEntity entity=new VoucherCustomerEntity();
+                entity.setVoucherId(id);
+                entity.setCustomerId(customerId);
+                entity.setStartTime(startTime);
+                entity.setEndTime(endTime);
+
+
+                //代金券没有限量
+                if(totalQuota==0){
+                    int rows = voucherDao.takeVoucher(id);  //更新代金券数量
+                    if(rows==1){
+                        rows=voucherCustomerDao.insert(entity); //记录领取的代金券
+                        return rows==1?true:false;
+                    }else {
+                        return false;
+                    }
+                }
+                //代金券有总数量上的限制
+                else {
+                    String temp = operations.opsForValue().get("voucher_" + uuid).toString();
+                    int num = Integer.parseInt(temp);
+                    //扣减redis缓存
+                    if(num>0){
+                        num--;
+                        operations.multi();
+                        operations.opsForValue().set("voucher_" + uuid, num);   //更新代金券数量
+                        operations.exec();
+                        int rows = voucherDao.takeVoucher(id);
+                        if(rows==1){
+                            rows=voucherCustomerDao.insert(entity);     //记录领取的代金券
+                            return rows==1?true:false;
+                        }else {
+                            return false;
+                        }
+                    }
+                    else{
+                        operations.unwatch();
+                        //删除缓存
+                        operations.delete("voucher_" + uuid);
+                        operations.delete("voucher_info_" + uuid);
+                        return false;
+                    }
+                }
+            }
+        });
+        return result;
     }
 
     /**
