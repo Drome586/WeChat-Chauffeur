@@ -17,6 +17,10 @@ public class CreateWxPaymentForm {
     @Schema(description = "客户ID")
     private Long customerId;
 
+    @Min(value = 1, message = "customerVoucherId不能小于1")
+    @Schema(description = "领取的代金券ID")
+    private Long customerVoucherId;
+
     @Min(value = 1, message = "voucherId不能小于1")
     @Schema(description = "代金券ID")
     private Long voucherId;

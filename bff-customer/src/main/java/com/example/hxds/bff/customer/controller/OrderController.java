@@ -99,7 +99,7 @@ public class OrderController {
     public R createWxPayment(@RequestBody @Valid CreateWxPaymentForm form) {
         Long customerId = StpUtil.getLoginIdAsLong();
         form.setCustomerId(customerId);
-        HashMap map = orderService.createWxPayment(form.getOrderId(), form.getCustomerId(), form.getVoucherId());
+        HashMap map = orderService.createWxPayment(form.getOrderId(), form.getCustomerId(),form.getCustomerVoucherId(),form.getVoucherId());
         return R.ok().put("result", map);
     }
 

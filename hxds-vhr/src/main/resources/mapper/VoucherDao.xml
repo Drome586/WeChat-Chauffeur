@@ -40,6 +40,11 @@
         SET take_count = take_count + 1
         WHERE id = #{id}
     </update>
+    <update id="updateUsedCount">
+        UPDATE tb_voucher
+        SET used_count = used_count + 1
+        WHERE id = #{id}
+    </update>
     <delete id="deleteVoucherByIds">
         DELETE FROM tb_voucher
         WHERE id IN

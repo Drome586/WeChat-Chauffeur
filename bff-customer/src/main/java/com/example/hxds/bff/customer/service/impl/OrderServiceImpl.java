@@ -269,7 +269,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     @LcnTransaction
-    public HashMap createWxPayment(long orderId, long customerId, Long voucherId) {
+    public HashMap createWxPayment(long orderId, long customerId, Long customerVoucherId,Long voucherId) {
         /*
         先查询订单是否为6状态，其他状态都不可以生成订单
          */
@@ -286,12 +286,13 @@ public class OrderServiceImpl implements OrderService {
         //代金券的面额大小
         String discount = "0.00";
 
-        if(voucherId != null){
+        if(customerVoucherId != null && voucherId != null){
             /*
             查询代金券是否可以使用
              */
             UseVoucherForm form_2 = new UseVoucherForm();
             form_2.setCustomerId(customerId);
+            form_2.setId(customerVoucherId);
             form_2.setOrderId(orderId);
             form_2.setVoucherId(voucherId);
             form_2.setAmount(amount);
