@@ -286,5 +286,20 @@
         WHERE vc.customer_id = #{customerId}
           AND vc.`status` = 2
     </select>
+    <select id="searchBestUnUseVoucher" resultType="java.util.HashMap">
+        SELECT CAST(vc.id AS CHAR)          AS id,
+               CAST(vc.voucher_id AS CHAR)  AS voucherId,
+               CAST(v.discount AS CHAR)     AS discount
+        FROM tb_voucher_customer vc
+                 JOIN tb_voucher v ON v.id = vc.voucher_id
+        WHERE vc.customer_id = #{customerId}
+          AND vc.`status` = 1
+          AND (v.with_amount = 0 OR v.with_amount &lt;= #{amount})
+          AND ( NOW() BETWEEN vc.start_time AND vc.end_time
+            OR (vc.start_time IS NULL AND vc.end_time IS NULL)
+            )
+        ORDER BY v.discount DESC
+            LIMIT 1
+    </select>
 
 </mapper>

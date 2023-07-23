@@ -27,4 +27,6 @@ public interface VoucherService {
 
     public boolean takeVoucher(Map param);
 
+    public HashMap searchBestUnUseVoucher(Map param);
+
 }

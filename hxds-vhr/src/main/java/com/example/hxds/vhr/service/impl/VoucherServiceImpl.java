@@ -288,6 +288,12 @@ public class VoucherServiceImpl implements VoucherService {
         return result;
     }
 
+    @Override
+    public HashMap searchBestUnUseVoucher(Map param) {
+        HashMap map = voucherDao.searchBestUnUseVoucher(param);
+        return map;
+    }
+
     /**
      * 该私有方法的作用是将将上线的 “代金券信息” 和 ”代金券数量“ 缓存到redis中，并且设置过期时间
      * @param entity

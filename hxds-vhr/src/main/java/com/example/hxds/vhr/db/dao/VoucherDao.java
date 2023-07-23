@@ -44,6 +44,8 @@ public interface VoucherDao {
 
     public int takeVoucher(long id);
 
+    public HashMap searchBestUnUseVoucher(Map param);
+
 
 }
 

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -117,6 +118,14 @@ public class VoucherController {
         Map param = BeanUtil.beanToMap(form);
         boolean bool = voucherService.takeVoucher(param);
         return R.ok().put("result", bool);
+    }
+
+    @PostMapping("/searchBestUnUseVoucher")
+    @Operation(summary = "查询未使用的最佳代金券")
+    public R searchBestUnUseVoucher(@RequestBody @Valid SearchBestUnUseVoucherForm form) {
+        Map param = BeanUtil.beanToMap(form);
+        HashMap map = voucherService.searchBestUnUseVoucher(param);
+        return R.ok().put("result", map);
     }
 
 }

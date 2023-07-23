@@ -25,5 +25,8 @@ public interface VhrServiceApi {
 
     @PostMapping("/voucher/takeVoucher")
     public R takeVoucher(TakeVoucherForm form);
+
+    @PostMapping("/voucher/searchBestUnUseVoucher")
+    public R searchBestUnUseVoucher(SearchBestUnUseVoucherForm form);
 }
 

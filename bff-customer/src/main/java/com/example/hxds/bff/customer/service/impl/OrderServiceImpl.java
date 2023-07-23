@@ -235,7 +235,20 @@ public class OrderServiceImpl implements OrderService {
             HashMap temp = (HashMap) r.get("result");
             map.putAll(temp);
             int status = MapUtil.getInt(map, "status");
+
+            //TODO status 是6状态，使用最佳代金券
+            if (status == 6) {
+                SearchBestUnUseVoucherForm voucherForm = new SearchBestUnUseVoucherForm();
+                voucherForm.setCustomerId(form.getCustomerId());
+                BigDecimal total = new BigDecimal(MapUtil.getStr(map, "total"));
+                voucherForm.setAmount(total);
+                r = vhrServiceApi.searchBestUnUseVoucher(voucherForm);
+                temp = (HashMap) r.get("result");
+                map.put("voucher", temp);
+            }
             HashMap cmtMap = new HashMap();
+
+
             if (status >= 7) {
                 SearchCommentByOrderIdForm commentForm = new SearchCommentByOrderIdForm();
                 commentForm.setOrderId(form.getOrderId());
