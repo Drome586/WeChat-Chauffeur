@@ -114,6 +114,12 @@ public class OrderServiceImpl implements OrderService {
         if(!redisTemplate.hasKey("order#" + orderId)){
             return "抢单失败";
         }
+
+        String value = redisTemplate.opsForValue().get("order#" + orderId).toString();
+        if(value != null){
+            return "抢单失败";
+        }
+
         //执行Redis事务
         redisTemplate.execute(new SessionCallback() {
             @Override
