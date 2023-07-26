@@ -3,28 +3,28 @@ spring:
 
 tencent:
   cloud:
-    appId: 1313134815
-    secretId: AKIDWu5lU9ex52NbbMvTvEWebtzueEdpk0iP
-    secretKey: iN3e4Rn5CE6RaVBvTq13wc6N8jEYeope
-    region-public: ap-beijing
-    bucket-public: hxds-public-1313134815
-    region-private: ap-beijing
-    bucket-private: hxds-private-1313134815
+    appId: 微信小程序Appid
+    secretId: 腾讯云ID
+    secretKey: 密钥
+    region-public: 存储同位置
+    bucket-public: 存储桶名字
+    region-private: 存储桶位置
+    bucket-private: 存储桶名字
     face:
       groupName: hxds
       region: ap-beijing
   map:
-    key: 6V4BZ-LWTR5-2ZNIH-IQOMT-PTMUO-B2BY6
+    key: 腾讯位置服务密钥
 
 wx:
-  app-id: wx4cb8e9621950da45
-  app-secret: 86c4ecfa6be49444ab9b2e9c1490b5aa
-  mch-id: 1526972031
-  key: 5879a218f67f46a5aad75753a132ff3d
+  app-id: 微信小程序APPID
+  app-secret: 小程序密钥
+  mch-id: 商户号
+  key: 商户密钥
   cert-path: F:\apiclient_cert.p12
 
 minio:
   endpoint: http://localhost:9000
   access-key: root
-  secret-key: abc123456
+  secret-key: 密码
 
